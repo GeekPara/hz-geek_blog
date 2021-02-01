@@ -9,6 +9,7 @@ module.exports = {
   chainWebpack: config => {
     config.plugins.delete('prefetch')
   },
+  /*
   configureWebpack: (config) => {
     if (process.env.NODE_ENV === 'production') {
       config.mode = 'production'
@@ -20,7 +21,7 @@ module.exports = {
         })]
       }
     }
-  },
+  },*/
   css: {
     // 是否使用css分离插件 ExtractTextPlugin
     extract: false,
