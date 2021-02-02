@@ -87,7 +87,7 @@
           <div class="mdui-card-primary-title">登录：衡中极客圈</div>
           <div class="mdui-card-primary-subtitle">
             没有账号？
-            <a @click="signUp()">注册一个</a>
+            <a @click="signUp()" href="">注册一个</a>
           </div>
         </div>
         <div class="mdui-card-content">
@@ -97,16 +97,61 @@
           </div>
           <div class="mdui-textfield mdui-textfield-floating-label">
             <label class="mdui-textfield-label">密码</label>
-            <input class="mdui-textfield-input" v-model="password" type="password" />
+            <input
+              class="mdui-textfield-input"
+              v-model="password"
+              type="password"
+              @keyup.enter="login()"
+            />
           </div>
           <div>
             想不起来密码？
-            <a @click="resetPwd()">重置密码</a>
+            <a @click="resetPwd()" href="">重置密码</a>
           </div>
         </div>
-        <div class="mdui-card-actions">
-          <button class="mdui-btn mdui-ripple mdui-color-theme-accent" @click="login()">登录</button>
+        <div class="mdui-card-actions mdui-text-center">
+          <button class="mdui-btn mdui-ripple mdui-color-theme-accent mdui-btn-block" @click="login()">登录</button>
         </div>
+      </div>
+    </div>
+
+    <div class="mdui-dialog" id="signUp-dialog">
+      <div class="mdui-dialog-title">创建新账户</div>
+      <div class="mdui-dialog-content">
+        用户名即昵称，支持中文。注册后请查收验证邮件。
+        <div class="mdui-textfield mdui-textfield-floating-label">
+          <label class="mdui-textfield-label">用户名</label>
+          <input class="mdui-textfield-input" id="signUp-userName" type="text" />
+        </div>
+        <div class="mdui-textfield mdui-textfield-floating-label">
+          <label class="mdui-textfield-label">邮箱</label>
+          <input class="mdui-textfield-input" id="signUp-email" type="email" />
+        </div>
+        <div class="mdui-textfield mdui-textfield-floating-label">
+          <label class="mdui-textfield-label">密码</label>
+          <input class="mdui-textfield-input" id="signUp-password" type="password" />
+        </div>
+        <div class="mdui-textfield mdui-textfield-floating-label">
+          <label class="mdui-textfield-label">确认密码</label>
+          <input class="mdui-textfield-input" id="signUp-confirmPassword" type="password" />
+        </div>
+      </div>
+      <div class="mdui-dialog-actions mdui-text-center">
+        <button class="mdui-btn mdui-ripple mdui-btn-block" id="signUp-btn">注册</button>
+      </div>
+    </div>
+
+    <div class="mdui-dialog" id="resetPassword-dialog">
+      <div class="mdui-dialog-title">重置密码</div>
+      <div class="mdui-dialog-content">
+        输入账户绑定的邮箱，点击邮件中的链接来重置密码。
+        <div class="mdui-textfield mdui-textfield-floating-label">
+          <label class="mdui-textfield-label">邮箱</label>
+          <input class="mdui-textfield-input" id="reset-email" type="email" />
+        </div>
+      </div>
+      <div class="mdui-dialog-actions mdui-text-center">
+        <button class="mdui-btn mdui-ripple mdui-btn-block" id="reset-btn">确定</button>
       </div>
     </div>
 
@@ -157,12 +202,14 @@ footer {
   bottom: 0px;
   left: 0px;
 }
+
+a{text-decoration: none;}
+a:hover{}
 </style>
 
 <script>
 localStorage.setItem('debug', 'leancloud*');
 let currentUser
-import { generateFromString } from 'generate-avatar';
 export default {
   name: 'Main',
   methods: {
@@ -208,8 +255,8 @@ export default {
       return `{content: '${currentUser.get('username')}'}`;
     },
     avatar: function () {
-      if (!currentUser) return;
-      if (!currentUser.get('avatar')) return `data:image/svg+xml;utf8,${generateFromString(currentUser.get('username'))}`;
+      if (!currentUser) return null;
+      if (!currentUser.get('avatar')) return `https://api.multiavatar.com/${currentUser.get('username')}.svg`;
       return currentUser.get('avatar');
     }
   },
