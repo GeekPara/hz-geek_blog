@@ -85,7 +85,7 @@
       <div class="mdui-card">
         <div class="mdui-card-primary">
           <div class="mdui-card-primary-title">登录：衡中极客圈</div>
-          <div class="mdui-card-primary-subtitle">
+          <div class="mdui-card-primary-subtitle mdui-typo">
             没有账号？
             <a @click="signUp()" href="">注册一个</a>
           </div>
@@ -104,7 +104,7 @@
               @keyup.enter="login()"
             />
           </div>
-          <div>
+          <div class="mdui-typo">
             想不起来密码？
             <a @click="resetPwd()" href="">重置密码</a>
           </div>
@@ -202,9 +202,9 @@ footer {
   bottom: 0px;
   left: 0px;
 }
-
+/* 
 a{text-decoration: none;}
-a:hover{}
+a:hover{text-decoration: underline;} */
 </style>
 
 <script>
