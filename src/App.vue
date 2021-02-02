@@ -1,6 +1,7 @@
 <template>
   <div id="app">
     <header class="mdui-appbar mdui-appbar-fixed">
+      <!--头顶AppBar-->
       <div class="mdui-toolbar mdui-color-theme">
         <a href="#" class="mdui-btn mdui-btn-icon" mdui-drawer="{target: '#left-drawer'}">
           <i class="mdui-icon material-icons">menu</i>
@@ -18,9 +19,9 @@
             :class="{ 'mdui-btn-icon' : isLogin }"
           >
             <img :src="avatar" width="32" height="32" v-if="isLogin" />
-            <div v-else mdui-dialog="{target: '#loginDialog'}">请登录</div>
+            <div v-else @click="plsLogin()">请登录</div>
           </div>
-          <ul class="mdui-menu" id="appbar-avatar-popover" v-if="isLogin">
+          <ul class="mdui-menu" id="appbar-avatar-popover" v-show="isLogin">
             <li class="mdui-menu-item">
               <a href="javascript:;" class="mdui-ripple">
                 <i class="mdui-menu-item-icon mdui-icon material-icons">&#xe851;</i>个人空间
@@ -37,6 +38,7 @@
     </header>
 
     <div class="mdui-drawer mdui-shadow-16" id="left-drawer">
+      <!--左侧Drawer-->
       <div class="mdui-card" id="drawer-head">
         <div class="mdui-card-media">
           <img src="//cdn.w3cbus.com/mdui.org/docs/assets/docs/img/card.jpg" />
@@ -74,6 +76,7 @@
     </div>
 
     <div class="mdui-container mdui-typo main">
+      <!--主体渲染部分-->
       <div class="mdui-row mdui-valign mdui-m-y-2">
         <transition name="fade">
           <router-view></router-view>
@@ -81,81 +84,101 @@
       </div>
     </div>
 
-    <div class="mdui-dialog" id="loginDialog" v-if="!isLogin">
+    <div class="mdui-dialog" id="login-dialog" v-if="!isLogin">
+      <!--登录Dialog-->
       <div class="mdui-card">
         <div class="mdui-card-primary">
           <div class="mdui-card-primary-title">登录：衡中极客圈</div>
           <div class="mdui-card-primary-subtitle mdui-typo">
             没有账号？
-            <a @click="signUp()" href="">注册一个</a>
+            <a @click="signUp()">注册一个</a>
           </div>
         </div>
         <div class="mdui-card-content">
           <div class="mdui-textfield mdui-textfield-floating-label">
             <label class="mdui-textfield-label">用户名/邮箱</label>
-            <input class="mdui-textfield-input" v-model="username" type="text" />
+            <input class="mdui-textfield-input" v-model="usernameL" type="text" />
           </div>
           <div class="mdui-textfield mdui-textfield-floating-label">
             <label class="mdui-textfield-label">密码</label>
             <input
               class="mdui-textfield-input"
-              v-model="password"
+              v-model="passwordL"
               type="password"
               @keyup.enter="login()"
             />
           </div>
           <div class="mdui-typo">
             想不起来密码？
-            <a @click="resetPwd()" href="">重置密码</a>
+            <a @click="resetPwd()">重置密码</a>
           </div>
         </div>
         <div class="mdui-card-actions mdui-text-center">
-          <button class="mdui-btn mdui-ripple mdui-color-theme-accent mdui-btn-block" @click="login()">登录</button>
+          <button
+            class="mdui-btn mdui-ripple mdui-color-theme-accent mdui-btn-block"
+            @click="login()"
+          >登录</button>
         </div>
       </div>
     </div>
 
-    <div class="mdui-dialog" id="signUp-dialog">
+    <div class="mdui-dialog" id="signUp-dialog" v-if="!isLogin">
+      <!--注册Dialog-->
       <div class="mdui-dialog-title">创建新账户</div>
       <div class="mdui-dialog-content">
-        用户名即昵称，支持中文。注册后请查收验证邮件。
+        新注册用户默认仅有评论权限，仅极客圈成员有文章发布权限。
         <div class="mdui-textfield mdui-textfield-floating-label">
           <label class="mdui-textfield-label">用户名</label>
-          <input class="mdui-textfield-input" id="signUp-userName" type="text" />
+          <input class="mdui-textfield-input" v-model="username" type="text" />
+          <div class="mdui-textfield-error">不允许使用这个用户名</div>
+          <div class="mdui-textfield-helper">用户名即外显昵称，支持中文</div>
         </div>
-        <div class="mdui-textfield mdui-textfield-floating-label">
+        <div class="mdui-textfield mdui-textfield-floating-label" >
           <label class="mdui-textfield-label">邮箱</label>
-          <input class="mdui-textfield-input" id="signUp-email" type="email" />
+          <input class="mdui-textfield-input" v-model="email" type="email" />
+          <div class="mdui-textfield-error">邮箱格式有误</div>
+          <div class="mdui-textfield-helper">请在注册后查收验证邮件激活账户</div>
         </div>
         <div class="mdui-textfield mdui-textfield-floating-label">
           <label class="mdui-textfield-label">密码</label>
-          <input class="mdui-textfield-input" id="signUp-password" type="password" />
+          <input class="mdui-textfield-input" v-model="password" type="password" />
+          <div class="mdui-textfield-helper">确保您的密码强度足够高</div>
         </div>
-        <div class="mdui-textfield mdui-textfield-floating-label">
+        <div class="mdui-textfield mdui-textfield-floating-label" :class="{ 'mdui-textfield-invalid': confirmError }">
           <label class="mdui-textfield-label">确认密码</label>
-          <input class="mdui-textfield-input" id="signUp-confirmPassword" type="password" />
+          <input class="mdui-textfield-input" v-model="confirm" type="password" />
+          <div class="mdui-textfield-error">两次输入的密码不一致</div>
+          <div class="mdui-textfield-helper">再输一遍，以确认您的密码没有输入错误</div>
         </div>
       </div>
       <div class="mdui-dialog-actions mdui-text-center">
-        <button class="mdui-btn mdui-ripple mdui-btn-block" id="signUp-btn">注册</button>
+        <button
+          class="mdui-btn mdui-ripple mdui-color-theme-accent mdui-btn-block"
+          id="signUp-btn"
+        >注册</button>
       </div>
     </div>
 
-    <div class="mdui-dialog" id="resetPassword-dialog">
+    <div class="mdui-dialog" id="resetPassword-dialog" v-if="!isLogin">
+      <!--重置密码Dialog-->
       <div class="mdui-dialog-title">重置密码</div>
       <div class="mdui-dialog-content">
         输入账户绑定的邮箱，点击邮件中的链接来重置密码。
         <div class="mdui-textfield mdui-textfield-floating-label">
           <label class="mdui-textfield-label">邮箱</label>
-          <input class="mdui-textfield-input" id="reset-email" type="email" />
+          <input class="mdui-textfield-input" v-model="emailR" type="email" />
         </div>
       </div>
       <div class="mdui-dialog-actions mdui-text-center">
-        <button class="mdui-btn mdui-ripple mdui-btn-block" id="reset-btn">确定</button>
+        <button
+          class="mdui-btn mdui-ripple mdui-color-theme-accent mdui-btn-block"
+          @click="sendResetEmail()"
+        >发送重置邮件</button>
       </div>
     </div>
 
-    <div class="mdui-dialog" id="confirmLogoutDialog">
+    <div class="mdui-dialog" id="confirmLogoutDialog" v-if="isLogin">
+      <!--确认登出Dialog-->
       <div class="mdui-dialog-title">退出登录？</div>
       <div class="mdui-dialog-content">乃确定不是手滑了？</div>
       <div class="mdui-dialog-actions">
@@ -165,6 +188,7 @@
     </div>
 
     <footer class="mdui-color-white">
+      <!--页脚-->
       <div class="mdui-container mdui-typo">
         <div class="mdui-row">
           <div
@@ -209,19 +233,23 @@ a:hover{text-decoration: underline;} */
 
 <script>
 localStorage.setItem('debug', 'leancloud*');
-let currentUser
+let AV, mdui, currentUser, loginDlg, signupDlg, rstpswdDlg;
 export default {
   name: 'Main',
   methods: {
+    plsLogin: function () {
+      loginDlg = new mdui.Dialog('#login-dialog',);
+      signupDlg = new mdui.Dialog('#signUp-dialog',);
+      rstpswdDlg = new mdui.Dialog('#resetPassword-dialog',);
+      loginDlg.open();
+    },
     logout: function () {
-      this.AV.User.logOut();
+      AV.User.logOut();
       location.reload();
     },
     login: function () {
-      var AV = this.AV;
-      var mdui = this.mdui;
-      var userName = this.username;
-      var password = this.password;
+      var userName = this.usernameL;
+      var password = this.passwordL;
       if (userName != "" && password != "") {
         if (userName.indexOf("@") != -1 && userName.indexOf(".") != -1) {
           AV.User.loginWithEmail(userName, password).then(() => {
@@ -243,6 +271,33 @@ export default {
       else {
         mdui.snackbar("请输入用户名和密码~",);
       }
+    },
+    signUp: function () {
+      loginDlg.close();
+      signupDlg.open();
+    },
+    resetPwd: function () {
+      loginDlg.close();
+      rstpswdDlg.open();
+    },
+    sendResetEmail: function () {
+      if (!this.emailR) return mdui.snackbar("请填写邮箱~",);
+      AV.User.requestPasswordReset(this.emailR).then(() => {
+        mdui.snackbar("重置邮件已发送~",)
+        rstpswdDlg.close();
+      }, () => {
+        mdui.snackbar("电子邮件有误，该账户不存在",)
+      })
+    }
+  },
+  watch: {
+    email: function () {
+      this.emailError = true;
+      if (this.email.indexOf("@") != -1 && this.email.indexOf(".") != -1) this.emailError = false;
+    },
+    confirm: function () {
+      this.confirmError = true;
+      if (this.password == this.confirm) this.confirmError = false;
     }
   },
   computed: {
@@ -260,8 +315,15 @@ export default {
       return currentUser.get('avatar');
     }
   },
-  created() {
-    const AV = this.AV;
+  data: function () {
+    return {
+      emailError: false,
+      confirmError: false,
+    };
+  },
+  created: function () {
+    AV = this.AV;
+    mdui = this.mdui;
     currentUser = AV.User.current();
   }
 }
