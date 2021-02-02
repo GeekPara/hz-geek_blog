@@ -319,6 +319,14 @@ export default {
     return {
       emailError: false,
       confirmError: false,
+      username: '',
+      email: '',
+      password: '',
+      confirm: '',
+      usernameL: '',
+      emailL: '',
+      passwordL: '',
+      emailR: ''
     };
   },
   created: function () {
