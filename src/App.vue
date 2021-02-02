@@ -17,12 +17,7 @@
             mdui-menu="{target: '#appbar-avatar-popover'}"
             :class="{ 'mdui-btn-icon' : isLogin }"
           >
-            <img
-              src="//cdn.jsdelivr.net/gh/JupiterJun/picture/hzgeekAvatar/6002cdd177fcd4410f050f73.jpg"
-              width="32"
-              height="32"
-              v-if="isLogin"
-            />
+            <img :src="avatar" width="32" height="32" v-if="isLogin" />
             <div v-else mdui-dialog="{target: '#loginDialog'}">请登录</div>
           </div>
           <ul class="mdui-menu" id="appbar-avatar-popover" v-if="isLogin">
@@ -167,7 +162,7 @@ footer {
 <script>
 localStorage.setItem('debug', 'leancloud*');
 let currentUser
-
+import { generateFromString } from 'generate-avatar';
 export default {
   name: 'Main',
   methods: {
@@ -209,8 +204,13 @@ export default {
       return false;
     },
     tooltipUsername: function () {
-      if (!currentUser) return `{content: '点击登录'}`
-      return `{content: '你好，${currentUser.get('username')}'}`
+      if (!currentUser) return `{content: '点击登录'}`;
+      return `{content: '${currentUser.get('username')}'}`;
+    },
+    avatar: function () {
+      if (!currentUser) return;
+      if (!currentUser.get('avatar')) return `data:image/svg+xml;utf8,${generateFromString(currentUser.get('username'))}`;
+      return currentUser.get('avatar');
     }
   },
   created() {
