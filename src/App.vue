@@ -133,18 +133,25 @@
           <div class="mdui-textfield-error">不允许使用这个用户名</div>
           <div class="mdui-textfield-helper">用户名即外显昵称，支持中文</div>
         </div>
-        <div class="mdui-textfield mdui-textfield-floating-label" >
+        <div class="mdui-textfield mdui-textfield-floating-label">
           <label class="mdui-textfield-label">邮箱</label>
           <input class="mdui-textfield-input" v-model="email" type="email" />
           <div class="mdui-textfield-error">邮箱格式有误</div>
           <div class="mdui-textfield-helper">请在注册后查收验证邮件激活账户</div>
         </div>
-        <div class="mdui-textfield mdui-textfield-floating-label">
+        <div
+          class="mdui-textfield mdui-textfield-floating-label"
+          :class="{ 'mdui-textfield-invalid': passwordError }"
+        >
           <label class="mdui-textfield-label">密码</label>
           <input class="mdui-textfield-input" v-model="password" type="password" />
+          <div class="mdui-textfield-error">两次输入的密码不一致</div>
           <div class="mdui-textfield-helper">确保您的密码强度足够高</div>
         </div>
-        <div class="mdui-textfield mdui-textfield-floating-label" :class="{ 'mdui-textfield-invalid': confirmError }">
+        <div
+          class="mdui-textfield mdui-textfield-floating-label"
+          :class="{ 'mdui-textfield-invalid': confirmError }"
+        >
           <label class="mdui-textfield-label">确认密码</label>
           <input class="mdui-textfield-input" v-model="confirm" type="password" />
           <div class="mdui-textfield-error">两次输入的密码不一致</div>
@@ -154,7 +161,7 @@
       <div class="mdui-dialog-actions mdui-text-center">
         <button
           class="mdui-btn mdui-ripple mdui-color-theme-accent mdui-btn-block"
-          id="signUp-btn"
+          @click="signupSubmit"
         >注册</button>
       </div>
     </div>
@@ -167,6 +174,7 @@
         <div class="mdui-textfield mdui-textfield-floating-label">
           <label class="mdui-textfield-label">邮箱</label>
           <input class="mdui-textfield-input" v-model="emailR" type="email" />
+          <div class="mdui-textfield-error">邮箱格式有误</div>
         </div>
       </div>
       <div class="mdui-dialog-actions mdui-text-center">
@@ -260,9 +268,17 @@ export default {
           });
         }
         else {
-          AV.User.logIn(userName, password).then(() => {
+          AV.User.logIn(userName, password).then(async () => {
+            const roles = await AV.User.current().getRoles();
+            if (!roles) {
+              const query = new AV.Query('_Role');
+              query.equalTo('name', 'Subscriber');
+              query.first().then((Subscriber) => {
+                Subscriber.getUsers().add(AV.User.current());
+              }, () => mdui.snackbar("添加权限错误，请联系管理员",));
+            }
             mdui.snackbar("登录成功~",);
-            document.location.href = "/";
+            location.reload();
           }, () => {
             mdui.snackbar("用户名或密码错误~",);
           });
@@ -288,16 +304,41 @@ export default {
       }, () => {
         mdui.snackbar("电子邮件有误，该账户不存在",)
       })
+    },
+    signupSubmit: function () {
+      var userName = this.username;
+      var email = this.email;
+      var password = this.password
+      var confirmPassword = this.confirm;
+      if (userName == "" || email == "" || password == "" || confirmPassword == "") return mdui.snackbar("把信息填完整再注册哦~",)
+      if (confirmPassword != password) return mdui.snackbar("两次输入的密码不一致~",);
+      if (email.indexOf("@") == -1 || email.indexOf(".") == -1) return mdui.snackbar("邮箱格式不对",);
+      const user = new AV.User();
+      user.setUsername(userName);
+      user.setPassword(password);
+      user.setEmail(email);
+      user.signUp().then(() => {
+        mdui.snackbar("注册成功！请查收验证邮件~",);
+        signupDlg.close();
+      }, () => {
+        mdui.snackbar("注册失败~可能是用户名或邮箱已被占用",);
+      });
     }
   },
   watch: {
-    email: function () {
-      this.emailError = true;
-      if (this.email.indexOf("@") != -1 && this.email.indexOf(".") != -1) this.emailError = false;
-    },
     confirm: function () {
-      this.confirmError = true;
-      if (this.password == this.confirm) this.confirmError = false;
+      if (this.password == this.confirm) {
+        this.confirmError = false;
+        this.passwordError = false;
+      }
+      else this.confirmError = true;
+    },
+    password: function () {
+      if (this.password == this.confirm) {
+        this.passwordError = false;
+        this.confirmError = false;
+      }
+      else this.passwordError = true;
     }
   },
   computed: {
@@ -307,18 +348,17 @@ export default {
     },
     tooltipUsername: function () {
       if (!currentUser) return `{content: '点击登录'}`;
-      return `{content: '${currentUser.get('username')}'}`;
+      return `{content: '${this.getUserInfo(currentUser).username}'}`;
     },
     avatar: function () {
       if (!currentUser) return null;
-      if (!currentUser.get('avatar')) return `https://api.multiavatar.com/${currentUser.get('username')}.svg`;
-      return currentUser.get('avatar');
+      return this.getUserInfo(currentUser).avatar;
     }
   },
   data: function () {
     return {
-      emailError: false,
       confirmError: false,
+      passwordError: false,
       username: '',
       email: '',
       password: '',

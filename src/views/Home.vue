@@ -51,8 +51,8 @@ export default {
         ];
         const query = new AV.Query('_Users');
         const user = await query.get(author.id);
-        const authorName = user.get('username');
-        var avatar = `//cdn.jsdelivr.net/gh/JupiterJun/picture/hzgeekAvatar/${author.id}.jpg`;
+        var authorName = this.getUserInfo(user).username;
+        var avatar = this.getUserInfo(user).avatar;
         var showDate = `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日`
         layout.push({
           title: title,

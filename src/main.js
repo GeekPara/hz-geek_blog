@@ -15,10 +15,17 @@ AV.init({
 Vue.config.productionTip = false;
 Vue.prototype.AV = AV;
 Vue.prototype.mdui = mdui;
+Vue.prototype.getUserInfo = function (userObj) {
+  var avatar,username;
+  if (!userObj.get('avatar')) avatar = `//api.multiavatar.com/${userObj.get('username')}.svg`;
+  else avatar = userObj.get('avatar');
+  username = userObj.get('username');
+  return { avatar: avatar, username: username };
+}
+
+Vue.use(mdui);
 
 new Vue({
   router,
   render: h => h(App)
 }).$mount('#app');
-
-Vue.use(mdui);
