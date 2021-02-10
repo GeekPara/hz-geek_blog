@@ -339,7 +339,7 @@ export default {
       user.signUp().then(() => {
         mdui.snackbar("注册成功！请查收验证邮件~",);
         signupDlg.close();
-      }, () => {
+      }, (error) => {
         if (error.code == 202) return mdui.snackbar("该用户名已被占用",);
         if (error.code == 203) return mdui.snackbar("该邮箱已被占用",);
         mdui.snackbar("注册失败，未知原因",);
