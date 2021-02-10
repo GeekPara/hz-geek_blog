@@ -26,6 +26,7 @@
 </template>
 
 <script>
+//import func from '../../vue-temp/vue-editor-bridge';
 let layout = []
 export default {
   name: 'Home',
@@ -35,7 +36,7 @@ export default {
       articles: layout
     }
   },
-  created() {
+  created: function () {
     const AV = this.AV;
     (async function () {
       const query = new AV.Query('Article');
@@ -50,9 +51,16 @@ export default {
           article.createdAt
         ];
         const query = new AV.Query('_Users');
-        const user = await query.get(author.id);
-        var authorName = this.getUserInfo(user).username;
-        var avatar = this.getUserInfo(user).avatar;
+        var authorName,avatar
+        try {
+          const user = await query.get(author.id);
+          authorName = this.getUserInfo(user).username;
+          avatar = this.getUserInfo(user).avatar;
+        }
+        catch {
+          authorName = '已注销的用户';
+          avatar = '//api.multiavatar.com/anonymous.svg';
+        }
         var showDate = `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日`
         layout.push({
           title: title,

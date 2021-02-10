@@ -1,7 +1,8 @@
 <template>
   <div id="app">
+    <!--头顶AppBar-->
     <header class="mdui-appbar mdui-appbar-fixed">
-      <!--头顶AppBar-->
+      
       <div class="mdui-toolbar mdui-color-theme">
         <a href="#" class="mdui-btn mdui-btn-icon" mdui-drawer="{target: '#left-drawer'}">
           <i class="mdui-icon material-icons">menu</i>
@@ -37,8 +38,9 @@
       </div>
     </header>
 
+    <!--左侧Drawer-->
     <div class="mdui-drawer mdui-shadow-16" id="left-drawer">
-      <!--左侧Drawer-->
+      
       <div class="mdui-card" id="drawer-head">
         <div class="mdui-card-media">
           <img src="//cdn.w3cbus.com/mdui.org/docs/assets/docs/img/card.jpg" />
@@ -260,11 +262,23 @@ export default {
       var password = this.passwordL;
       if (userName != "" && password != "") {
         if (userName.indexOf("@") != -1 && userName.indexOf(".") != -1) {
-          AV.User.loginWithEmail(userName, password).then(() => {
+          AV.User.loginWithEmail(userName, password).then(async () => {
+            const roles = await AV.User.current().getRoles();
+            if (!roles) {
+              const query = new AV.Query('_Role');
+              query.equalTo('name', 'Subscriber');
+              query.first().then((Subscriber) => {
+                Subscriber.getUsers().add(AV.User.current());
+              }, () => mdui.snackbar("添加权限错误，请联系管理员",));
+            }
             mdui.snackbar("登录成功~",);
-            document.location.href = "/";
-          }, () => {
-            mdui.snackbar("邮箱或密码错误~",);
+            location.reload();
+          }, (error) => {
+            if (error.code == 216) return mdui.snackbar("您的邮箱还未验证",);
+            if (error.code == 210) return mdui.snackbar("用户名或密码不正确",);
+            if (error.code == 211) return mdui.snackbar("该用户不存在",);
+            if (error.code == 219) return mdui.snackbar("密码错误次数过多，15分钟后再试",);
+            mdui.snackbar("登录失败，未知原因",);
           });
         }
         else {
@@ -279,8 +293,12 @@ export default {
             }
             mdui.snackbar("登录成功~",);
             location.reload();
-          }, () => {
-            mdui.snackbar("用户名或密码错误~",);
+          }, (error) => {
+            if (error.code == 216) return mdui.snackbar("您的邮箱还未验证",);
+            if (error.code == 210) return mdui.snackbar("用户名或密码不正确",);
+            if (error.code == 211) return mdui.snackbar("该用户不存在",);
+            if (error.code == 219) return mdui.snackbar("密码错误次数过多，15分钟后再试",);
+            mdui.snackbar("登录失败，未知原因",);
           });
         }
       }
@@ -308,7 +326,7 @@ export default {
     signupSubmit: function () {
       var userName = this.username;
       var email = this.email;
-      var password = this.password
+      var password = this.password;
       var confirmPassword = this.confirm;
       if (userName == "" || email == "" || password == "" || confirmPassword == "") return mdui.snackbar("把信息填完整再注册哦~",)
       if (confirmPassword != password) return mdui.snackbar("两次输入的密码不一致~",);
