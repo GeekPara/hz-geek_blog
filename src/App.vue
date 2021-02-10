@@ -319,8 +319,9 @@ export default {
       AV.User.requestPasswordReset(this.emailR).then(() => {
         mdui.snackbar("重置邮件已发送~",)
         rstpswdDlg.close();
-      }, () => {
-        mdui.snackbar("电子邮件有误，该账户不存在",)
+      }, (error) => {
+        if (error.code == 219) return mdui.snackbar("该邮箱并未注册",);
+        mdui.snackbar("发送重置邮件失败，未知原因",);
       })
     },
     signupSubmit: function () {
@@ -339,7 +340,9 @@ export default {
         mdui.snackbar("注册成功！请查收验证邮件~",);
         signupDlg.close();
       }, () => {
-        mdui.snackbar("注册失败~可能是用户名或邮箱已被占用",);
+        if (error.code == 202) return mdui.snackbar("该用户名已被占用",);
+        if (error.code == 203) return mdui.snackbar("该邮箱已被占用",);
+        mdui.snackbar("注册失败，未知原因",);
       });
     }
   },
