@@ -2,7 +2,6 @@
   <div id="app">
     <!--头顶AppBar-->
     <header class="mdui-appbar mdui-appbar-fixed">
-      
       <div class="mdui-toolbar mdui-color-theme">
         <a href="#" class="mdui-btn mdui-btn-icon" mdui-drawer="{target: '#left-drawer'}">
           <i class="mdui-icon material-icons">menu</i>
@@ -40,7 +39,6 @@
 
     <!--左侧Drawer-->
     <div class="mdui-drawer mdui-shadow-16" id="left-drawer">
-      
       <div class="mdui-card" id="drawer-head">
         <div class="mdui-card-media">
           <img src="//cdn.w3cbus.com/mdui.org/docs/assets/docs/img/card.jpg" />
@@ -77,8 +75,8 @@
       </ul>
     </div>
 
+    <!--主体渲染部分-->
     <div class="mdui-container mdui-typo main">
-      <!--主体渲染部分-->
       <div class="mdui-row mdui-valign mdui-m-y-2">
         <transition name="fade">
           <router-view></router-view>
@@ -86,8 +84,8 @@
       </div>
     </div>
 
+    <!--登录Dialog-->
     <div class="mdui-dialog" id="login-dialog" v-if="!isLogin">
-      <!--登录Dialog-->
       <div class="mdui-card">
         <div class="mdui-card-primary">
           <div class="mdui-card-primary-title">登录：衡中极客圈</div>
@@ -124,8 +122,8 @@
       </div>
     </div>
 
+    <!--注册Dialog-->
     <div class="mdui-dialog" id="signUp-dialog" v-if="!isLogin">
-      <!--注册Dialog-->
       <div class="mdui-dialog-title">创建新账户</div>
       <div class="mdui-dialog-content">
         新注册用户默认仅有评论权限，仅极客圈成员有文章发布权限。
@@ -168,8 +166,8 @@
       </div>
     </div>
 
+    <!--重置密码Dialog-->
     <div class="mdui-dialog" id="resetPassword-dialog" v-if="!isLogin">
-      <!--重置密码Dialog-->
       <div class="mdui-dialog-title">重置密码</div>
       <div class="mdui-dialog-content">
         输入账户绑定的邮箱，点击邮件中的链接来重置密码。
@@ -187,8 +185,8 @@
       </div>
     </div>
 
+    <!--确认登出Dialog-->
     <div class="mdui-dialog" id="confirmLogoutDialog" v-if="isLogin">
-      <!--确认登出Dialog-->
       <div class="mdui-dialog-title">退出登录？</div>
       <div class="mdui-dialog-content">乃确定不是手滑了？</div>
       <div class="mdui-dialog-actions">
@@ -197,8 +195,8 @@
       </div>
     </div>
 
+    <!--页脚-->
     <footer class="mdui-color-white">
-      <!--页脚-->
       <div class="mdui-container mdui-typo">
         <div class="mdui-row">
           <div
@@ -236,9 +234,6 @@ footer {
   bottom: 0px;
   left: 0px;
 }
-/* 
-a{text-decoration: none;}
-a:hover{text-decoration: underline;} */
 </style>
 
 <script>
