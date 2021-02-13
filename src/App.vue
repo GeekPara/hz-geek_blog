@@ -49,7 +49,7 @@
             </div>
             <div class="mdui-card-actions">
               <router-link to="/about" class="mdui-btn mdui-ripple mdui-ripple-white">关于我们</router-link>
-              <button class="mdui-btn mdui-ripple mdui-ripple-white">站点条款</button>
+              <router-link to="/article/1" class="mdui-btn mdui-ripple mdui-ripple-white">测试链接</router-link>
             </div>
           </div>
         </div>
@@ -221,7 +221,7 @@
 
 body {
   min-height: 100%;
-  background-image: url(//cdn.jsdelivr.net/gh/JupiterJun/picture/background.webp);
+  background-image: url('assets/bkg.svg');
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center;
