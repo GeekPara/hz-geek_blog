@@ -59,7 +59,7 @@ export default {
     const article = await query.first();
     var author;
     var date = new Date(date);
-    [this.headImage, this.title, this.subtitle, this.author, this.content, date] = [
+    [this.headImage, this.title, this.subtitle, author, this.content, date] = [
       article.get('headImage') || '//cdn.w3cbus.com/mdui.org/docs/assets/docs/img/card.jpg',
       article.get('title'),
       article.get('subtitle'),
