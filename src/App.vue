@@ -55,7 +55,7 @@
         </div>
       </div>
 
-      <ul class="mdui-list mdui-color-white">
+      <ul class="mdui-list mdui-color-grey-800">
         <li class="mdui-list-item mdui-ripple">
           <i class="mdui-list-item-icon mdui-icon material-icons">move_to_inbox</i>
           <div class="mdui-list-item-content">Inbox</div>
