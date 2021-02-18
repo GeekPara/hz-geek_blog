@@ -14,8 +14,7 @@
     "mavon-editor": "^2.9.1",
     "mdui": "^1.0.1",
     "vue": "^2.6.11",
-    "vue-router": "^3.2.0",
-    "vue-showdown": "^2.4.1"
+    "vue-router": "^3.2.0"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.5.0",

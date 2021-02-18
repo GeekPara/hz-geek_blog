@@ -6,7 +6,6 @@ import router from './router';
 import AV from 'leancloud-storage';
 import mavonEditor from 'mavon-editor';
 import 'mavon-editor/dist/css/index.css';
-import VueShowdownPlugin from 'vue-showdown';
 
 AV.init({
   appId: "cGsb2KHXLfjY2o1Gg2hOSHgS-gzGzoHsz",
@@ -20,7 +19,7 @@ Vue.prototype.AV = AV;
 Vue.prototype.mdui = mdui;
 
 Vue.prototype.getUserInfo = function (userObj) {
-  var avatar,username;
+  var avatar, username;
   if (!userObj.get('avatar')) avatar = `//api.multiavatar.com/${userObj.get('username')}.svg`;
   else avatar = userObj.get('avatar');
   username = userObj.get('username');
@@ -30,14 +29,6 @@ Vue.prototype.getUserInfo = function (userObj) {
 Vue.use(mdui);
 Vue.use(mavonEditor);
 // app.use() 的第二个参数是可选的
-Vue.use(VueShowdownPlugin, {
-  // 设置 showdown 默认 flavor
-  flavor: 'github',
-  // 设置 showdown 默认 options （会覆盖上面 flavor 的 options）
-  options: {
-    emoji: false,
-  },
-});
 
 new Vue({
   router,

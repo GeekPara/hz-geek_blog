@@ -20,7 +20,7 @@
     </div>
     <div class="mdui-card">
       <div class="mdui-card-content mdui-typo">
-        <VueShowdown :markdown="content" flavor="github" :options="{ emoji: true }" />
+        
       </div>
 
       <div class="mdui-card-actions">

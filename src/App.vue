@@ -39,7 +39,7 @@
 
     <!--左侧Drawer-->
     <div class="mdui-drawer mdui-shadow-16" id="left-drawer">
-      <div class="mdui-card" id="drawer-head">
+      <div class="mdui-card" style="text-align:center">
         <div class="mdui-card-media">
           <img src="//cdn.w3cbus.com/mdui.org/docs/assets/docs/img/card.jpg" />
           <div class="mdui-card-media-covered">
@@ -215,16 +215,13 @@
 </template>
 
 <style>
-#drawer-head {
-  text-align: center;
-}
-
 body {
   min-height: 100%;
   background-image: url('assets/bkg.svg');
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center;
+  background-attachment: fixed
 }
 
 footer {
