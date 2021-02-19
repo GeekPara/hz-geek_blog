@@ -9,9 +9,9 @@
   },
   "dependencies": {
     "compression-webpack-plugin": "^7.1.2",
-    "core-js": "^3.6.5",
+    "core-js": "^3.9.0",
     "leancloud-storage": "^4.10.0",
-    "mavon-editor": "^2.9.1",
+    "mavon-editor-x": "^1.0.1",
     "mdui": "^1.0.1",
     "vue": "^2.6.11",
     "vue-router": "^3.2.0"

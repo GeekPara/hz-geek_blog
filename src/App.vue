@@ -16,16 +16,21 @@
             class="mdui-btn mdui-btn-dense mdui-hoverable"
             :mdui-tooltip="tooltipUsername"
             mdui-menu="{target: '#appbar-avatar-popover'}"
-            :class="{ 'mdui-btn-icon' : isLogin }"
+            :class="{ 'mdui-btn-icon' : this.isLogin() }"
           >
-            <img :src="avatar" width="32" height="32" v-if="isLogin" />
+            <img :src="avatar" width="32" height="32" v-if="this.isLogin()" />
             <div v-else @click="plsLogin()">请登录</div>
           </div>
-          <ul class="mdui-menu" id="appbar-avatar-popover" v-show="isLogin">
+          <ul class="mdui-menu" id="appbar-avatar-popover" v-show="this.isLogin()">
             <li class="mdui-menu-item">
               <a href="javascript:;" class="mdui-ripple">
                 <i class="mdui-menu-item-icon mdui-icon material-icons">&#xe851;</i>个人空间
               </a>
+            </li>
+            <li class="mdui-menu-item" v-if="canWrite">
+              <router-link to="/write/new-article" class="mdui-ripple">
+                <i class="mdui-menu-item-icon mdui-icon material-icons">&#xe3c9;</i>撰写文章
+              </router-link>
             </li>
             <li class="mdui-menu-item">
               <a mdui-dialog="{target: '#confirmLogoutDialog'}" class="mdui-ripple">
@@ -85,7 +90,7 @@
     </div>
 
     <!--登录Dialog-->
-    <div class="mdui-dialog" id="login-dialog" v-if="!isLogin">
+    <div class="mdui-dialog" id="login-dialog" v-if="!this.isLogin()">
       <div class="mdui-card">
         <div class="mdui-card-primary">
           <div class="mdui-card-primary-title">登录：衡中极客圈</div>
@@ -123,7 +128,7 @@
     </div>
 
     <!--注册Dialog-->
-    <div class="mdui-dialog" id="signUp-dialog" v-if="!isLogin">
+    <div class="mdui-dialog" id="signUp-dialog" v-if="!this.isLogin()">
       <div class="mdui-dialog-title">创建新账户</div>
       <div class="mdui-dialog-content">
         新注册用户默认仅有评论权限，仅极客圈成员有文章发布权限。
@@ -167,7 +172,7 @@
     </div>
 
     <!--重置密码Dialog-->
-    <div class="mdui-dialog" id="resetPassword-dialog" v-if="!isLogin">
+    <div class="mdui-dialog" id="resetPassword-dialog" v-if="!this.isLogin()">
       <div class="mdui-dialog-title">重置密码</div>
       <div class="mdui-dialog-content">
         输入账户绑定的邮箱，点击邮件中的链接来重置密码。
@@ -186,7 +191,7 @@
     </div>
 
     <!--确认登出Dialog-->
-    <div class="mdui-dialog" id="confirmLogoutDialog" v-if="isLogin">
+    <div class="mdui-dialog" id="confirmLogoutDialog" v-if="this.isLogin()">
       <div class="mdui-dialog-title">退出登录？</div>
       <div class="mdui-dialog-content">乃确定不是手滑了？</div>
       <div class="mdui-dialog-actions">
@@ -217,11 +222,11 @@
 <style>
 body {
   min-height: 100%;
-  background-image: url('assets/bkg.svg');
+  background-image: url("assets/bkg.svg");
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center;
-  background-attachment: fixed
+  background-attachment: fixed;
 }
 
 footer {
@@ -235,7 +240,7 @@ footer {
 
 <script>
 localStorage.setItem('debug', 'leancloud*');
-let AV, mdui, currentUser, loginDlg, signupDlg, rstpswdDlg;
+let AV, mdui, loginDlg, signupDlg, rstpswdDlg;
 export default {
   name: 'Main',
   methods: {
@@ -255,14 +260,6 @@ export default {
       if (userName != "" && password != "") {
         if (userName.indexOf("@") != -1 && userName.indexOf(".") != -1) {
           AV.User.loginWithEmail(userName, password).then(async () => {
-            const roles = await AV.User.current().getRoles();
-            if (!roles) {
-              const query = new AV.Query('_Role');
-              query.equalTo('name', 'Subscriber');
-              query.first().then((Subscriber) => {
-                Subscriber.getUsers().add(AV.User.current());
-              }, () => mdui.snackbar("添加权限错误，请联系管理员",));
-            }
             mdui.snackbar("登录成功~",);
             location.reload();
           }, (error) => {
@@ -336,7 +333,7 @@ export default {
         if (error.code == 203) return mdui.snackbar("该邮箱已被占用",);
         mdui.snackbar("注册失败，未知原因",);
       });
-    }
+    },
   },
   watch: {
     confirm: function () {
@@ -355,17 +352,13 @@ export default {
     }
   },
   computed: {
-    isLogin: function () {
-      if (currentUser) return true;
-      return false;
-    },
     tooltipUsername: function () {
-      if (!currentUser) return `{content: '点击登录'}`;
-      return `{content: '${this.getUserInfo(currentUser).username}'}`;
+      if (!this.currentUser) return `{content: '点击登录'}`;
+      return `{content: '${this.getUserInfo(this.currentUser).username}'}`;
     },
     avatar: function () {
-      if (!currentUser) return null;
-      return this.getUserInfo(currentUser).avatar;
+      if (!this.currentUser) return null;
+      return this.getUserInfo(this.currentUser).avatar;
     }
   },
   data: function () {
@@ -379,13 +372,14 @@ export default {
       usernameL: '',
       emailL: '',
       passwordL: '',
-      emailR: ''
+      emailR: '',
+      canWrite: false
     };
   },
-  created: function () {
+  created: async function () {
     AV = this.AV;
     mdui = this.mdui;
-    currentUser = AV.User.current();
+    this.canWrite = await this.isEditor();
   }
 }
 </script>

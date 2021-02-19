@@ -22,6 +22,11 @@ const routes = [
     path: '/article/:onlyTag',
     name: 'Article',
     component: () => import('../views/Article.vue')
+  },
+  {
+    path: '/write/:onlyTag',
+    name: 'Write',
+    component: () => import('../views/Write.vue')
   }
 ]
 
