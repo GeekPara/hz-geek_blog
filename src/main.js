@@ -4,8 +4,8 @@ import mdui from 'mdui';
 import 'mdui/dist/css/mdui.min.css';
 import router from './router';
 import AV from 'leancloud-storage';
-import mavonEditor from 'mavon-editor-x';
-import 'mavon-editor-x/dist/css/index.css';
+import mavonEditor from 'mavon-editor-mdui';
+import 'mavon-editor-mdui/dist/css/index.css'
 
 AV.init({
   appId: "cGsb2KHXLfjY2o1Gg2hOSHgS-gzGzoHsz",

@@ -11,7 +11,10 @@
     "compression-webpack-plugin": "^7.1.2",
     "core-js": "^3.9.0",
     "leancloud-storage": "^4.10.0",
-    "mavon-editor-x": "^1.0.1",
+    "markdown-it": "^12.0.4",
+    "markdown-it-highlightjs": "^3.4.0",
+    "markdown-it-katex": "^2.0.3",
+    "mavon-editor-mdui": "^2.9.2",
     "mdui": "^1.0.1",
     "vue": "^2.6.11",
     "vue-router": "^3.2.0"

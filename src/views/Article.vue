@@ -20,7 +20,7 @@
     </div>
     <div class="mdui-card">
       <div class="mdui-card-content mdui-typo">
-        
+        <Markdown :content="content" />
       </div>
 
       <div class="mdui-card-actions">
@@ -35,8 +35,10 @@
 </template>
 
 <script>
+import Markdown from '../components/Markdown.vue';
 let AV;
 export default {
+  components: { Markdown },
   data: function () {
     return {
       title: '',
