@@ -2,14 +2,17 @@ const CompressionPlugin = require('compression-webpack-plugin')
 module.exports = {
   productionSourceMap: false,
   runtimeCompiler: true,
+
   devServer: {
     host: '0.0.0.0',
     port: 233,
     disableHostCheck: true
   },
+
   chainWebpack: config => {
     config.plugins.delete('prefetch')
   },
+
   /*
   configureWebpack: (config) => {
     if (process.env.NODE_ENV === 'production') {
@@ -32,5 +35,9 @@ module.exports = {
     loaderOptions: {},
     // 启用 CSS modules for all css / pre-processor files.
     modules: false
-  }
+  },
+
+  transpileDependencies: [
+    'vuetify'
+  ]
 }

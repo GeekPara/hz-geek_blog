@@ -1,242 +1,105 @@
+
 <template>
-  <div id="app">
-    <!--头顶AppBar-->
-    <header class="mdui-appbar mdui-appbar-fixed">
-      <div class="mdui-toolbar mdui-color-theme">
-        <a href="#" class="mdui-btn mdui-btn-icon" mdui-drawer="{target: '#left-drawer'}">
-          <i class="mdui-icon material-icons">menu</i>
-        </a>
-        <router-link to="/" class="mdui-typo-headline">衡中极客圈</router-link>
-        <router-link to="/" class="mdui-typo-title">博客</router-link>
+  <v-app id="inspire">
+    <v-app-bar app>
+      <v-app-bar-nav-icon></v-app-bar-nav-icon>
 
-        <div class="mdui-toolbar-spacer"></div>
+      <v-app-bar-title>衡中极客圈</v-app-bar-title>
 
-        <div class="avatar">
-          <div
-            class="mdui-btn mdui-btn-dense mdui-hoverable"
-            :mdui-tooltip="tooltipUsername"
-            mdui-menu="{target: '#appbar-avatar-popover'}"
-            :class="{ 'mdui-btn-icon' : this.isLogin() }"
-          >
-            <img :src="avatar" width="32" height="32" v-if="this.isLogin()" />
-            <div v-else @click="plsLogin()">请登录</div>
-          </div>
-          <ul class="mdui-menu" id="appbar-avatar-popover" v-show="this.isLogin()">
-            <li class="mdui-menu-item">
-              <a href="javascript:;" class="mdui-ripple">
-                <i class="mdui-menu-item-icon mdui-icon material-icons">&#xe851;</i>个人空间
-              </a>
-            </li>
-            <li class="mdui-menu-item" v-if="canWrite">
-              <router-link to="/write/new-article" class="mdui-ripple">
-                <i class="mdui-menu-item-icon mdui-icon material-icons">&#xe3c9;</i>撰写文章
-              </router-link>
-            </li>
-            <li class="mdui-menu-item">
-              <a mdui-dialog="{target: '#confirmLogoutDialog'}" class="mdui-ripple">
-                <i class="mdui-menu-item-icon mdui-icon material-icons">&#xe879;</i>退出登录
-              </a>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </header>
+      <v-spacer></v-spacer>
+      <v-tooltip bottom>
+        <template v-slot:activator="{ on, attrs }">
+          <v-avatar class="mr-10" size="32" v-on="on" v-bind="attrs" v-if="isLogin">
+            <img :src="avatar" />
+          </v-avatar>
+        </template>
+        <span>{{tooltipUsername}}</span>
+      </v-tooltip>
 
-    <!--左侧Drawer-->
-    <div class="mdui-drawer mdui-shadow-16" id="left-drawer">
-      <div class="mdui-card" style="text-align:center">
-        <div class="mdui-card-media">
-          <img src="//cdn.w3cbus.com/mdui.org/docs/assets/docs/img/card.jpg" />
-          <div class="mdui-card-media-covered">
-            <div class="mdui-card-primary">
-              <div class="mdui-card-primary-title">衡中极客圈</div>
-              <div to="/" class="mdui-card-primary-subtitle">官方博客</div>
-            </div>
-            <div class="mdui-card-actions">
-              <router-link to="/about" class="mdui-btn mdui-ripple mdui-ripple-white">关于我们</router-link>
-              <router-link to="/article/1" class="mdui-btn mdui-ripple mdui-ripple-white">测试链接</router-link>
-            </div>
-          </div>
-        </div>
-      </div>
+      <v-dialog width="500">
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn color="primary" elevation="2" v-on="on" v-bind="attrs">登录</v-btn>
+        </template>
 
-      <ul class="mdui-list mdui-color-grey-800">
-        <li class="mdui-list-item mdui-ripple">
-          <i class="mdui-list-item-icon mdui-icon material-icons">move_to_inbox</i>
-          <div class="mdui-list-item-content">Inbox</div>
-        </li>
-        <li class="mdui-list-item mdui-ripple">
-          <i class="mdui-list-item-icon mdui-icon material-icons">send</i>
-          <div class="mdui-list-item-content">Outbox</div>
-        </li>
-        <li class="mdui-list-item mdui-ripple">
-          <i class="mdui-list-item-icon"></i>
-          <div class="mdui-list-item-content">Trash</div>
-        </li>
-        <li class="mdui-list-item mdui-ripple">
-          <i class="mdui-list-item-icon"></i>
-          <div class="mdui-list-item-content">Spam</div>
-        </li>
-      </ul>
-    </div>
+        <v-card>
+          <v-card-title class="headline grey lighten-2">登录：衡中极客圈</v-card-title>
 
-    <!--主体渲染部分-->
-    <div class="mdui-container mdui-typo main">
-      <div class="mdui-row mdui-valign mdui-m-y-2">
+          <v-card-text>
+            <v-text-field label="用户名/邮箱" outlined v-model="usernameL"></v-text-field>
+            <v-text-field label="密码" outlined v-model="passwordL"></v-text-field>
+          </v-card-text>
+
+          <v-divider></v-divider>
+
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="primary" text @click="login()">登录</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+    </v-app-bar>
+
+    <v-navigation-drawer permanent app>
+      <v-list-item>
+        <v-list-item-content>
+          <v-list-item-title class="title">Application</v-list-item-title>
+          <v-list-item-subtitle>subtext</v-list-item-subtitle>
+        </v-list-item-content>
+      </v-list-item>
+
+      <v-divider></v-divider>
+
+      <v-list dense nav>
+        <v-list-item>
+          <v-list-item-icon>
+            <v-icon>mdi-image</v-icon>
+          </v-list-item-icon>
+
+          <v-list-item-content>
+            <v-list-item-title>123</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+      </v-list>
+    </v-navigation-drawer>
+
+    <v-main class="grey lighten-3">
+      <v-container>
         <transition name="fade">
           <router-view></router-view>
         </transition>
-      </div>
-    </div>
-
-    <!--登录Dialog-->
-    <div class="mdui-dialog" id="login-dialog" v-if="!this.isLogin()">
-      <div class="mdui-card">
-        <div class="mdui-card-primary">
-          <div class="mdui-card-primary-title">登录：衡中极客圈</div>
-          <div class="mdui-card-primary-subtitle mdui-typo">
-            没有账号？
-            <a @click="signUp()">注册一个</a>
-          </div>
-        </div>
-        <div class="mdui-card-content">
-          <div class="mdui-textfield mdui-textfield-floating-label">
-            <label class="mdui-textfield-label">用户名/邮箱</label>
-            <input class="mdui-textfield-input" v-model="usernameL" type="text" />
-          </div>
-          <div class="mdui-textfield mdui-textfield-floating-label">
-            <label class="mdui-textfield-label">密码</label>
-            <input
-              class="mdui-textfield-input"
-              v-model="passwordL"
-              type="password"
-              @keyup.enter="login()"
-            />
-          </div>
-          <div class="mdui-typo">
-            想不起来密码？
-            <a @click="resetPwd()">重置密码</a>
-          </div>
-        </div>
-        <div class="mdui-card-actions mdui-text-center">
-          <button
-            class="mdui-btn mdui-ripple mdui-color-theme-accent mdui-btn-block"
-            @click="login()"
-          >登录</button>
-        </div>
-      </div>
-    </div>
-
-    <!--注册Dialog-->
-    <div class="mdui-dialog" id="signUp-dialog" v-if="!this.isLogin()">
-      <div class="mdui-dialog-title">创建新账户</div>
-      <div class="mdui-dialog-content">
-        新注册用户默认仅有评论权限，仅极客圈成员有文章发布权限。
-        <div class="mdui-textfield mdui-textfield-floating-label">
-          <label class="mdui-textfield-label">用户名</label>
-          <input class="mdui-textfield-input" v-model="username" type="text" />
-          <div class="mdui-textfield-error">不允许使用这个用户名</div>
-          <div class="mdui-textfield-helper">用户名即外显昵称，支持中文</div>
-        </div>
-        <div class="mdui-textfield mdui-textfield-floating-label">
-          <label class="mdui-textfield-label">邮箱</label>
-          <input class="mdui-textfield-input" v-model="email" type="email" />
-          <div class="mdui-textfield-error">邮箱格式有误</div>
-          <div class="mdui-textfield-helper">请在注册后查收验证邮件激活账户</div>
-        </div>
-        <div
-          class="mdui-textfield mdui-textfield-floating-label"
-          :class="{ 'mdui-textfield-invalid': passwordError }"
-        >
-          <label class="mdui-textfield-label">密码</label>
-          <input class="mdui-textfield-input" v-model="password" type="password" />
-          <div class="mdui-textfield-error">两次输入的密码不一致</div>
-          <div class="mdui-textfield-helper">确保您的密码强度足够高</div>
-        </div>
-        <div
-          class="mdui-textfield mdui-textfield-floating-label"
-          :class="{ 'mdui-textfield-invalid': confirmError }"
-        >
-          <label class="mdui-textfield-label">确认密码</label>
-          <input class="mdui-textfield-input" v-model="confirm" type="password" />
-          <div class="mdui-textfield-error">两次输入的密码不一致</div>
-          <div class="mdui-textfield-helper">再输一遍，以确认您的密码没有输入错误</div>
-        </div>
-      </div>
-      <div class="mdui-dialog-actions mdui-text-center">
-        <button
-          class="mdui-btn mdui-ripple mdui-color-theme-accent mdui-btn-block"
-          @click="signupSubmit"
-        >注册</button>
-      </div>
-    </div>
-
-    <!--重置密码Dialog-->
-    <div class="mdui-dialog" id="resetPassword-dialog" v-if="!this.isLogin()">
-      <div class="mdui-dialog-title">重置密码</div>
-      <div class="mdui-dialog-content">
-        输入账户绑定的邮箱，点击邮件中的链接来重置密码。
-        <div class="mdui-textfield mdui-textfield-floating-label">
-          <label class="mdui-textfield-label">邮箱</label>
-          <input class="mdui-textfield-input" v-model="emailR" type="email" />
-          <div class="mdui-textfield-error">邮箱格式有误</div>
-        </div>
-      </div>
-      <div class="mdui-dialog-actions mdui-text-center">
-        <button
-          class="mdui-btn mdui-ripple mdui-color-theme-accent mdui-btn-block"
-          @click="sendResetEmail()"
-        >发送重置邮件</button>
-      </div>
-    </div>
-
-    <!--确认登出Dialog-->
-    <div class="mdui-dialog" id="confirmLogoutDialog" v-if="this.isLogin()">
-      <div class="mdui-dialog-title">退出登录？</div>
-      <div class="mdui-dialog-content">乃确定不是手滑了？</div>
-      <div class="mdui-dialog-actions">
-        <button class="mdui-btn mdui-ripple" mdui-dialog-close>手滑了~</button>
-        <button class="mdui-btn mdui-ripple" @click="logout()">确定退出</button>
-      </div>
-    </div>
-
-    <!--页脚-->
-    <footer class="mdui-color-white">
-      <div class="mdui-container mdui-typo">
-        <div class="mdui-row">
-          <div
-            class="mdui-col-xs-6 mdui-col-md-2 mdui-col-offset-md-5 mdui-col-offset-xs-3 mdui-m-y-2 mdui-text-center"
-          >
-            <img
-              src="@/assets/logo-chupin.png"
-              class="mdui-img-fluid"
-              onclick="window.open('https:\/\/www.hzgeek.top');"
-            />
-          </div>
-        </div>
-      </div>
-    </footer>
-  </div>
+      </v-container>
+      <v-speed-dial
+        v-model="fab"
+        :top="top"
+        :bottom="bottom"
+        :right="right"
+        :left="left"
+        :direction="direction"
+        :open-on-hover="hover"
+        :transition="transition"
+        :fixed="fixed"
+      >
+        <template v-slot:activator>
+          <v-btn v-if="isLogin" v-model="fab" color="blue darken-2" dark fab >
+            <v-icon v-if="fab">mdi-close</v-icon>
+            <v-icon v-else>mdi-account-circle</v-icon>
+          </v-btn>
+        </template>
+        <router-link to="/write/new-article" v-if="canWrite">
+          <v-btn fab dark small color="green">
+            <v-icon>mdi-pencil</v-icon>
+          </v-btn>
+        </router-link>
+        <v-btn fab dark small color="indigo">
+          <v-icon>mdi-plus</v-icon>
+        </v-btn>
+        <v-btn fab dark small color="red" @click="logout">
+          <v-icon>mdi-logout</v-icon>
+        </v-btn>
+      </v-speed-dial>
+    </v-main>
+  </v-app>
 </template>
-
-<style>
-body {
-  min-height: 100%;
-  background-image: url("assets/bkg.svg");
-  background-repeat: no-repeat;
-  background-size: cover;
-  background-position: center;
-  background-attachment: fixed;
-}
-
-footer {
-  height: 84px;
-  width: 100%;
-  position: relative;
-  bottom: 0px;
-  left: 0px;
-}
-</style>
 
 <script>
 localStorage.setItem('debug', 'leancloud*');
@@ -353,13 +216,21 @@ export default {
   },
   computed: {
     tooltipUsername: function () {
-      if (!this.currentUser) return `{content: '点击登录'}`;
-      return `{content: '${this.getUserInfo(this.currentUser).username}'}`;
+      if (!this.currentUser) return null;
+      return this.getUserInfo(this.currentUser).username;
     },
     avatar: function () {
       if (!this.currentUser) return null;
       return this.getUserInfo(this.currentUser).avatar;
-    }
+    },
+    activeFab() {
+      switch (this.tabs) {
+        case 'one': return { class: 'purple', icon: 'account_circle' }
+        case 'two': return { class: 'red', icon: 'edit' }
+        case 'three': return { class: 'green', icon: 'keyboard_arrow_up' }
+        default: return {}
+      }
+    },
   },
   data: function () {
     return {
@@ -373,13 +244,32 @@ export default {
       emailL: '',
       passwordL: '',
       emailR: '',
-      canWrite: false
+      canWrite: false,
+      isLogin: false,
+      links: [
+        'Dashboard',
+        'Messages',
+        'Profile',
+        'Updates',
+      ],
+      direction: 'top',
+      fab: false,
+      fling: false,
+      hover: true,
+      tabs: null,
+      top: false,
+      right: true,
+      bottom: true,
+      left: false,
+      fixed: true,
+      transition: 'scale-transition',
     };
   },
   created: async function () {
     AV = this.AV;
     mdui = this.mdui;
     this.canWrite = await this.isEditor();
+    this.isLogin = this.isLogingIn();
   }
 }
 </script>

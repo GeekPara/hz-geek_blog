@@ -6,6 +6,7 @@ import router from './router';
 import AV from 'leancloud-storage';
 import mavonEditor from 'mavon-editor-mdui';
 import 'mavon-editor-mdui/dist/css/index.css'
+import vuetify from './plugins/vuetify';
 
 AV.init({
   appId: "cGsb2KHXLfjY2o1Gg2hOSHgS-gzGzoHsz",
@@ -26,7 +27,7 @@ Vue.prototype.getUserInfo = function (userObj) {
   username = userObj.get('username');
   return { avatar: avatar, username: username, };
 }
-Vue.prototype.isLogin = function () {
+Vue.prototype.isLogingIn = async function () {
   if (AV.User.current()) return true;
   return false;
 }
@@ -42,9 +43,11 @@ Vue.prototype.isEditor = async function () {
 
 Vue.use(mdui);
 Vue.use(mavonEditor);
+
 // app.use() 的第二个参数是可选的
 
 new Vue({
   router,
+  vuetify,
   render: h => h(App)
 }).$mount('#app');
