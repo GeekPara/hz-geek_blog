@@ -29,7 +29,7 @@ export default {
     md: null
   }),
   computed: {
-    html: function() {
+    html: function () {
       let res = this.md.render(this.content)
       res = res.replace(
         /<a href="(?!http:\/\/|https:\/\/)([^#]*?)">(.*?)<\/a>/g,
@@ -87,4 +87,7 @@ export default {
 .markdown-body {
   margin: 20px 0px;
 }
+@import url(//cdn.jsdelivr.net/gh/highlightjs/cdn-release@10.5.0/build/styles/default.min.css);
+@import url(//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css);
+@import url(//cdn.jsdelivr.net/npm/github-markdown-css/github-markdown.css);
 </style>

@@ -5,6 +5,7 @@
       v-for="article in articles"
       :key="article.route"
     >
+    <v-lazy>
       <router-link :to="article.route">
         <div class="mdui-card-media" style="height: 20rem;">
           <img :src="article.headImage" class="mdui-img-fluid" />
@@ -23,7 +24,9 @@
           </div>
         </div>
       </router-link>
+      </v-lazy>
     </div>
+    
   </div>
 </template>
 

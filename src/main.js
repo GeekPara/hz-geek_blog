@@ -27,7 +27,7 @@ Vue.prototype.getUserInfo = function (userObj) {
   username = userObj.get('username');
   return { avatar: avatar, username: username, };
 }
-Vue.prototype.isLogingIn = async function () {
+Vue.prototype.isLogingIn = function () {
   if (AV.User.current()) return true;
   return false;
 }

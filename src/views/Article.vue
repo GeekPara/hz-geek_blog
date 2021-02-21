@@ -34,6 +34,12 @@
   </div>
 </template>
 
+<style>
+.markdown-body pre code {
+  background-color: #00000000 !important;
+}
+</style>
+
 <script>
 import Markdown from '../components/Markdown.vue';
 let AV;

@@ -2,31 +2,39 @@
 <template>
   <v-app id="inspire">
     <v-app-bar app>
-      <v-container fill-height >
+      <v-container class="py-0 fill-height">
         <v-app-bar-title>衡中极客圈</v-app-bar-title>
         <v-spacer></v-spacer>
-        <v-text-field
-          placeholder="搜索..."
-          prepend-inner-icon="mdi-cloud-search"
-          filled
-          rounded
-          dense
-          clearable
-          class="float-right"
-        ></v-text-field>
+        <v-responsive max-width="260">
+          <v-text-field
+            dense
+            filled
+            hide-details
+            rounded
+            clearable
+            placeholder="搜索..."
+            prepend-inner-icon="mdi-cloud-search"
+          ></v-text-field>
+        </v-responsive>
       </v-container>
     </v-app-bar>
 
     <v-navigation-drawer v-model="drawer" :mini-variant.sync="mini" permanent app>
       <v-list-item class="px-2">
-        <v-list-item-avatar>
-          <v-img src="https://randomuser.me/api/portraits/men/85.jpg"></v-img>
+        <v-list-item-avatar v-if="isLogin">
+          <v-img :src="loginAvatar"></v-img>
         </v-list-item-avatar>
+        <v-list-item-icon v-else>
+          <v-btn icon @click.stop="mini = !mini">
+            <v-icon>mdi-login</v-icon>
+          </v-btn>
+        </v-list-item-icon>
 
         <v-list-item-title>
-          <v-dialog width="500">
+          <span v-if="isLogin">{{loginUsername}}</span>
+          <v-dialog width="500" v-else>
             <template v-slot:activator="{ on, attrs }">
-              <v-btn color="primary" elevation="2" v-on="on" v-bind="attrs">登录</v-btn>
+              <v-btn color="primary" elevation="2" v-on="on" v-bind="attrs" v-if="!isLogin">登录</v-btn>
             </template>
 
             <v-card>
@@ -55,13 +63,48 @@
       <v-divider></v-divider>
 
       <v-list dense>
-        <v-list-item v-for="item in items" :key="item.title" link>
+        <v-list-item link to="/">
           <v-list-item-icon>
-            <v-icon>{{ item.icon }}</v-icon>
+            <v-icon>mdi-home</v-icon>
           </v-list-item-icon>
-
           <v-list-item-content>
-            <v-list-item-title>{{ item.title }}</v-list-item-title>
+            <v-list-item-title>Home Page</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+
+        <v-list-item link v-if="isLogin">
+          <v-list-item-icon>
+            <v-icon>mdi-account</v-icon>
+          </v-list-item-icon>
+          <v-list-item-content>
+            <v-list-item-title>My Account</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+
+        <v-list-item link v-if="canWrite" to="/write/new-article">
+          <v-list-item-icon>
+            <v-icon>mdi-pencil</v-icon>
+          </v-list-item-icon>
+          <v-list-item-content>
+            <v-list-item-title>Write an Article</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+
+        <v-list-item link v-if="isLogin">
+          <v-list-item-icon>
+            <v-icon>mdi-logout</v-icon>
+          </v-list-item-icon>
+          <v-list-item-content>
+            <v-list-item-title>Log Out</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+
+        <v-list-item link v-if="!isLogin">
+          <v-list-item-icon>
+            <v-icon>mdi-account-plus</v-icon>
+          </v-list-item-icon>
+          <v-list-item-content>
+            <v-list-item-title>Creat a New Account</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
       </v-list>
@@ -73,38 +116,18 @@
           <router-view></router-view>
         </transition>
       </v-container>
-      <v-speed-dial
-        v-model="fab"
-        bottom
-        right
-        direction="top"
-        open-on-hover
-        transition="scale-transition"
-        fixed
-      >
-        <template v-slot:activator>
-          <v-btn v-if="isLogin" v-model="fab" color="blue darken-2" dark fab>
-            <v-icon v-if="fab">mdi-close</v-icon>
-            <v-icon v-else>mdi-account-circle</v-icon>
-          </v-btn>
-        </template>
-        <v-btn fab dark small color="green" to="/write/new-article" v-if="canWrite">
-          <v-icon>mdi-pencil</v-icon>
+      <v-fab-transition>
+        <v-btn color="pink" dark bottom right fab fixed v-show="btnFlag" @click="backTop">
+          <v-icon>mdi-arrow-up-thick</v-icon>
         </v-btn>
-        <v-btn fab dark small color="indigo">
-          <v-icon>mdi-plus</v-icon>
-        </v-btn>
-        <v-btn fab dark small color="red" @click="logout">
-          <v-icon>mdi-logout</v-icon>
-        </v-btn>
-      </v-speed-dial>
+      </v-fab-transition>
     </v-main>
     <v-footer color="primary lighten-1" padless inset app absolute>
       <v-row justify="center" no-gutters>
         <v-btn v-for="link in links" :key="link" color="white" text rounded class="my-2">{{ link }}</v-btn>
         <v-col class="primary lighten-2 py-4 text-center white--text" cols="12">
           {{ new Date().getFullYear() }} —
-          <strong>Vuetify</strong>
+          <strong>衡中极客圈</strong>
         </v-col>
       </v-row>
     </v-footer>
@@ -207,6 +230,27 @@ export default {
         mdui.snackbar("注册失败，未知原因",);
       });
     },
+    backTop: function () {
+      const that = this
+      let timer = setInterval(() => {
+        let ispeed = Math.floor(-that.scrollTop / 5)
+        document.documentElement.scrollTop = document.body.scrollTop = that.scrollTop + ispeed
+        if (that.scrollTop === 0) {
+          clearInterval(timer)
+        }
+      }, 16)
+    },
+    scrollToTop: function () {
+      const that = this
+      let scrollTop = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop
+      that.scrollTop = scrollTop
+      if (that.scrollTop > 60) {
+        that.btnFlag = true
+      } else {
+        that.btnFlag = false
+      }
+    }
+
   },
   watch: {
     confirm: function () {
@@ -225,11 +269,11 @@ export default {
     }
   },
   computed: {
-    tooltipUsername: function () {
+    loginUsername: function () {
       if (!this.currentUser) return null;
       return this.getUserInfo(this.currentUser).username;
     },
-    avatar: function () {
+    loginAvatar: function () {
       if (!this.currentUser) return null;
       return this.getUserInfo(this.currentUser).avatar;
     },
@@ -270,6 +314,7 @@ export default {
         { title: 'Users', icon: 'mdi-account-group-outline' },
       ],
       mini: true,
+      btnFlag: false,
     };
   },
   created: async function () {
@@ -277,6 +322,13 @@ export default {
     mdui = this.mdui;
     this.canWrite = await this.isEditor();
     this.isLogin = this.isLogingIn();
-  }
+  },
+  mounted: function () {
+    window.addEventListener('scroll', this.scrollToTop)
+  },
+  destroyed: function () {
+    window.removeEventListener('scroll', this.scrollToTop)
+  },
+
 }
 </script>
