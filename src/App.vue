@@ -2,61 +2,66 @@
 <template>
   <v-app id="inspire">
     <v-app-bar app>
-      <v-app-bar-nav-icon></v-app-bar-nav-icon>
-
-      <v-app-bar-title>衡中极客圈</v-app-bar-title>
-
-      <v-spacer></v-spacer>
-      <v-tooltip bottom>
-        <template v-slot:activator="{ on, attrs }">
-          <v-avatar class="mr-10" size="32" v-on="on" v-bind="attrs" v-if="isLogin">
-            <img :src="avatar" />
-          </v-avatar>
-        </template>
-        <span>{{tooltipUsername}}</span>
-      </v-tooltip>
-
-      <v-dialog width="500">
-        <template v-slot:activator="{ on, attrs }">
-          <v-btn color="primary" elevation="2" v-on="on" v-bind="attrs">登录</v-btn>
-        </template>
-
-        <v-card>
-          <v-card-title class="headline grey lighten-2">登录：衡中极客圈</v-card-title>
-
-          <v-card-text>
-            <v-text-field label="用户名/邮箱" outlined v-model="usernameL"></v-text-field>
-            <v-text-field label="密码" outlined v-model="passwordL"></v-text-field>
-          </v-card-text>
-
-          <v-divider></v-divider>
-
-          <v-card-actions>
-            <v-spacer></v-spacer>
-            <v-btn color="primary" text @click="login()">登录</v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
+      <v-container fill-height >
+        <v-app-bar-title>衡中极客圈</v-app-bar-title>
+        <v-spacer></v-spacer>
+        <v-text-field
+          placeholder="搜索..."
+          prepend-inner-icon="mdi-cloud-search"
+          filled
+          rounded
+          dense
+          clearable
+          class="float-right"
+        ></v-text-field>
+      </v-container>
     </v-app-bar>
 
-    <v-navigation-drawer permanent app>
-      <v-list-item>
-        <v-list-item-content>
-          <v-list-item-title class="title">Application</v-list-item-title>
-          <v-list-item-subtitle>subtext</v-list-item-subtitle>
-        </v-list-item-content>
+    <v-navigation-drawer v-model="drawer" :mini-variant.sync="mini" permanent app>
+      <v-list-item class="px-2">
+        <v-list-item-avatar>
+          <v-img src="https://randomuser.me/api/portraits/men/85.jpg"></v-img>
+        </v-list-item-avatar>
+
+        <v-list-item-title>
+          <v-dialog width="500">
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn color="primary" elevation="2" v-on="on" v-bind="attrs">登录</v-btn>
+            </template>
+
+            <v-card>
+              <v-card-title class="headline grey lighten-2">登录：衡中极客圈</v-card-title>
+
+              <v-card-text>
+                <v-text-field label="用户名/邮箱" outlined v-model="usernameL"></v-text-field>
+                <v-text-field label="密码" outlined v-model="passwordL"></v-text-field>
+              </v-card-text>
+
+              <v-divider></v-divider>
+
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn color="primary" text @click="login()">登录</v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
+        </v-list-item-title>
+
+        <v-btn icon @click.stop="mini = !mini">
+          <v-icon>mdi-chevron-left</v-icon>
+        </v-btn>
       </v-list-item>
 
       <v-divider></v-divider>
 
-      <v-list dense nav>
-        <v-list-item>
+      <v-list dense>
+        <v-list-item v-for="item in items" :key="item.title" link>
           <v-list-item-icon>
-            <v-icon>mdi-image</v-icon>
+            <v-icon>{{ item.icon }}</v-icon>
           </v-list-item-icon>
 
           <v-list-item-content>
-            <v-list-item-title>123</v-list-item-title>
+            <v-list-item-title>{{ item.title }}</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
       </v-list>
@@ -70,26 +75,22 @@
       </v-container>
       <v-speed-dial
         v-model="fab"
-        :top="top"
-        :bottom="bottom"
-        :right="right"
-        :left="left"
-        :direction="direction"
-        :open-on-hover="hover"
-        :transition="transition"
-        :fixed="fixed"
+        bottom
+        right
+        direction="top"
+        open-on-hover
+        transition="scale-transition"
+        fixed
       >
         <template v-slot:activator>
-          <v-btn v-if="isLogin" v-model="fab" color="blue darken-2" dark fab >
+          <v-btn v-if="isLogin" v-model="fab" color="blue darken-2" dark fab>
             <v-icon v-if="fab">mdi-close</v-icon>
             <v-icon v-else>mdi-account-circle</v-icon>
           </v-btn>
         </template>
-        <router-link to="/write/new-article" v-if="canWrite">
-          <v-btn fab dark small color="green">
-            <v-icon>mdi-pencil</v-icon>
-          </v-btn>
-        </router-link>
+        <v-btn fab dark small color="green" to="/write/new-article" v-if="canWrite">
+          <v-icon>mdi-pencil</v-icon>
+        </v-btn>
         <v-btn fab dark small color="indigo">
           <v-icon>mdi-plus</v-icon>
         </v-btn>
@@ -98,6 +99,15 @@
         </v-btn>
       </v-speed-dial>
     </v-main>
+    <v-footer color="primary lighten-1" padless inset app absolute>
+      <v-row justify="center" no-gutters>
+        <v-btn v-for="link in links" :key="link" color="white" text rounded class="my-2">{{ link }}</v-btn>
+        <v-col class="primary lighten-2 py-4 text-center white--text" cols="12">
+          {{ new Date().getFullYear() }} —
+          <strong>Vuetify</strong>
+        </v-col>
+      </v-row>
+    </v-footer>
   </v-app>
 </template>
 
@@ -252,17 +262,14 @@ export default {
         'Profile',
         'Updates',
       ],
-      direction: 'top',
       fab: false,
-      fling: false,
-      hover: true,
-      tabs: null,
-      top: false,
-      right: true,
-      bottom: true,
-      left: false,
-      fixed: true,
-      transition: 'scale-transition',
+      drawer: true,
+      items: [
+        { title: 'Home', icon: 'mdi-home-city' },
+        { title: 'My Account', icon: 'mdi-account' },
+        { title: 'Users', icon: 'mdi-account-group-outline' },
+      ],
+      mini: true,
     };
   },
   created: async function () {
