@@ -146,6 +146,11 @@
           <v-icon>mdi-arrow-up-thick</v-icon>
         </v-btn>
       </v-fab-transition>
+      <v-snackbar
+        timeout="2000"
+        :value="theSnackbar.isOpened"
+        :color="theSnackbar.color"
+      >{{theSnackbar.content}}</v-snackbar>
     </v-main>
 
     <!--页脚Footer-->
@@ -163,7 +168,7 @@
 
 <script>
 localStorage.setItem('debug', 'leancloud*');
-let AV, mdui, loginDlg, signupDlg, rstpswdDlg;
+let AV, loginDlg, signupDlg, rstpswdDlg;
 export default {
   name: 'Main',
   methods: {
@@ -175,34 +180,22 @@ export default {
       var userName = this.usernameL;
       var password = this.passwordL;
       if (userName != "" && password != "") {
-        if (userName.indexOf("@") != -1 && userName.indexOf(".") != -1) {
-          AV.User.loginWithEmail(userName, password).then(async () => {
-            mdui.snackbar("登录成功~",);
-            await this.refresh();
-          }, (error) => {
-            if (error.code == 216) return mdui.snackbar("您的邮箱还未验证",);
-            if (error.code == 210) return mdui.snackbar("用户名或密码不正确",);
-            if (error.code == 211) return mdui.snackbar("该用户不存在",);
-            if (error.code == 219) return mdui.snackbar("密码错误次数过多，15分钟后再试",);
-            mdui.snackbar("登录失败，未知原因",);
-          });
-        }
-        else {
-          AV.User.logIn(userName, password).then(async () => {
-            mdui.snackbar("登录成功~",);
-            await this.refresh();
-          }, (error) => {
-            if (error.code == 216) return mdui.snackbar("您的邮箱还未验证",);
-            if (error.code == 210) return mdui.snackbar("用户名或密码不正确",);
-            if (error.code == 211) return mdui.snackbar("该用户不存在",);
-            if (error.code == 219) return mdui.snackbar("密码错误次数过多，15分钟后再试",);
-            mdui.snackbar("登录失败，未知原因",);
-          });
+        try {
+          if (userName.indexOf("@") != -1 && userName.indexOf(".") != -1)
+            await AV.User.loginWithEmail(userName, password);
+          else await AV.User.logIn(userName, password);
+          this.snackbar("登录成功~", "success");
+          await this.refresh();
+        } catch (error) {
+          if (error.code == 216) return this.snackbar("您的邮箱还未验证", "error");
+          if (error.code == 210) return this.snackbar("用户名或密码不正确", "error");
+          if (error.code == 211) return this.snackbar("该用户不存在", "error");
+          if (error.code == 219) return this.snackbar("密码错误次数过多，15分钟后再试", "error");
+          return this.snackbar("登录失败，未知原因", "error");
         }
       }
-      else {
-        mdui.snackbar("请输入用户名和密码~",);
-      }
+      else
+        return this.snackbar("请输入用户名和密码~", "error");
     },
     signUp: function () {
       loginDlg.close();
@@ -213,13 +206,13 @@ export default {
       rstpswdDlg.open();
     },
     sendResetEmail: function () {
-      if (!this.emailR) return mdui.snackbar("请填写邮箱~",);
+      if (!this.emailR) return this.snackbar("请填写邮箱~", "error");
       AV.User.requestPasswordReset(this.emailR).then(() => {
-        mdui.snackbar("重置邮件已发送~",)
+        this.snackbar("重置邮件已发送~", "error")
         rstpswdDlg.close();
       }, (error) => {
-        if (error.code == 219) return mdui.snackbar("该邮箱并未注册",);
-        mdui.snackbar("发送重置邮件失败，未知原因",);
+        if (error.code == 219) return this.snackbar("该邮箱并未注册", "error");
+        this.snackbar("发送重置邮件失败，未知原因", "error");
       })
     },
     signupSubmit: function () {
@@ -227,20 +220,20 @@ export default {
       var email = this.email;
       var password = this.password;
       var confirmPassword = this.confirm;
-      if (userName == "" || email == "" || password == "" || confirmPassword == "") return mdui.snackbar("把信息填完整再注册哦~",)
-      if (confirmPassword != password) return mdui.snackbar("两次输入的密码不一致~",);
-      if (email.indexOf("@") == -1 || email.indexOf(".") == -1) return mdui.snackbar("邮箱格式不对",);
+      if (userName == "" || email == "" || password == "" || confirmPassword == "") return this.snackbar("把信息填完整再注册哦~", "error")
+      if (confirmPassword != password) return this.snackbar("两次输入的密码不一致~", "error");
+      if (email.indexOf("@") == -1 || email.indexOf(".") == -1) return this.snackbar("邮箱格式不对", "error");
       const user = new AV.User();
       user.setUsername(userName);
       user.setPassword(password);
       user.setEmail(email);
       user.signUp().then(() => {
-        mdui.snackbar("注册成功！请查收验证邮件~",);
+        this.snackbar("注册成功！请查收验证邮件~", "error");
         signupDlg.close();
       }, (error) => {
-        if (error.code == 202) return mdui.snackbar("该用户名已被占用",);
-        if (error.code == 203) return mdui.snackbar("该邮箱已被占用",);
-        mdui.snackbar("注册失败，未知原因",);
+        if (error.code == 202) return this.snackbar("该用户名已被占用", "error");
+        if (error.code == 203) return this.snackbar("该邮箱已被占用", "error");
+        this.snackbar("注册失败，未知原因", "error");
       });
     },
     backTop: function () {
@@ -269,6 +262,11 @@ export default {
       if (AV.User.current()) this.loginUsername = this.getUserInfo(AV.User.current()).username;
       if (AV.User.current()) this.loginAvatar = this.getUserInfo(AV.User.current()).avatar;
       this.dialog.logOut = false;
+    },
+    snackbar: function (content, clolor) {
+      this.theSnackbar.content = content;
+      this.theSnackbar.color = clolor;
+      this.theSnackbar.isOpened = Math.random();
     }
   },
   watch: {
@@ -331,12 +329,16 @@ export default {
       show1: false,
       dialog: {
         logout: false,
+      },
+      theSnackbar: {
+        isOpened: false,
+        color: 'info',
+        content: 'This is a snackbar.'
       }
     };
   },
   created: async function () {
     AV = this.AV;
-    mdui = this.mdui;
     await this.refresh();
   },
   mounted: function () {

@@ -26,19 +26,19 @@
       </router-link>
       </v-lazy>
     </div>
-    
   </div>
+  
 </template>
 
 <script>
-//import func from '../../vue-temp/vue-editor-bridge';
 export default {
   name: 'Home',
-  components: {},
   data() {
     return {
       articles: []
     }
+  },
+  awaitComputed:{
   },
   created: async function () {
     const AV = this.AV;
