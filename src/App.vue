@@ -123,7 +123,7 @@
           </v-card>
         </v-dialog>
 
-        <v-list-item link v-if="!isLogin">
+        <v-list-item link v-if="!isLogin" to="/register">
           <v-list-item-icon>
             <v-icon>mdi-account-plus</v-icon>
           </v-list-item-icon>
@@ -138,7 +138,7 @@
     <v-main class="grey lighten-3">
       <v-container>
         <transition name="fade">
-          <router-view></router-view>
+          <router-view @showSnackbar="snackbar"></router-view>
         </transition>
       </v-container>
       <v-fab-transition>
@@ -168,7 +168,7 @@
 
 <script>
 localStorage.setItem('debug', 'leancloud*');
-let AV, loginDlg, signupDlg, rstpswdDlg;
+let AV;
 export default {
   name: 'Main',
   methods: {
@@ -197,44 +197,14 @@ export default {
       else
         return this.snackbar("请输入用户名和密码~", "error");
     },
-    signUp: function () {
-      loginDlg.close();
-      signupDlg.open();
-    },
-    resetPwd: function () {
-      loginDlg.close();
-      rstpswdDlg.open();
-    },
     sendResetEmail: function () {
       if (!this.emailR) return this.snackbar("请填写邮箱~", "error");
       AV.User.requestPasswordReset(this.emailR).then(() => {
         this.snackbar("重置邮件已发送~", "error")
-        rstpswdDlg.close();
       }, (error) => {
         if (error.code == 219) return this.snackbar("该邮箱并未注册", "error");
         this.snackbar("发送重置邮件失败，未知原因", "error");
       })
-    },
-    signupSubmit: function () {
-      var userName = this.username;
-      var email = this.email;
-      var password = this.password;
-      var confirmPassword = this.confirm;
-      if (userName == "" || email == "" || password == "" || confirmPassword == "") return this.snackbar("把信息填完整再注册哦~", "error")
-      if (confirmPassword != password) return this.snackbar("两次输入的密码不一致~", "error");
-      if (email.indexOf("@") == -1 || email.indexOf(".") == -1) return this.snackbar("邮箱格式不对", "error");
-      const user = new AV.User();
-      user.setUsername(userName);
-      user.setPassword(password);
-      user.setEmail(email);
-      user.signUp().then(() => {
-        this.snackbar("注册成功！请查收验证邮件~", "error");
-        signupDlg.close();
-      }, (error) => {
-        if (error.code == 202) return this.snackbar("该用户名已被占用", "error");
-        if (error.code == 203) return this.snackbar("该邮箱已被占用", "error");
-        this.snackbar("注册失败，未知原因", "error");
-      });
     },
     backTop: function () {
       const that = this
@@ -301,10 +271,6 @@ export default {
       passwordError: false,
       loginUsername: null,
       loginAvatar: null,
-      username: '',
-      email: '',
-      password: '',
-      confirm: '',
       usernameL: '',
       emailL: '',
       passwordL: '',
