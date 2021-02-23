@@ -7,6 +7,7 @@ import AV from 'leancloud-storage';
 import mavonEditor from 'mavon-editor-x';
 import 'mavon-editor-x/dist/css/index.css'
 import vuetify from './plugins/vuetify';
+import AsyncComputed from 'vue-async-computed'
 
 AV.init({
   appId: "cGsb2KHXLfjY2o1Gg2hOSHgS-gzGzoHsz",
@@ -19,11 +20,9 @@ Vue.config.productionTip = false;
 Vue.prototype.AV = AV;
 Vue.prototype.mdui = mdui;
 
-Vue.prototype.currentUser =  AV.User.current();
 Vue.prototype.getUserInfo = function (userObj) {
   var avatar,  username;
-  if (!userObj.get('avatar')) avatar = `//api.multiavatar.com/${userObj.get('username')}.svg`;
-  else avatar = userObj.get('avatar');
+  avatar = userObj.get('avatar') || `//api.multiavatar.com/${userObj.get('username')}.svg`;
   username = userObj.get('username');
   return { avatar: avatar, username: username, };
 }
@@ -32,17 +31,22 @@ Vue.prototype.isLogingIn = function () {
   return false;
 }
 Vue.prototype.isEditor = async function () {
-  if (this.currentUser) {
-    let array = await this.currentUser.getRoles();
-    for (let a of array) {
-      if (a.get('name') == 'Editor') return true;      
+  if (AV.User.current()) {
+    try {
+      let array = await AV.User.current().getRoles();
+      for (let a of array) {
+        if (a.get('name') == 'Editor') return true;      
+      }
+      return false;
+    } catch (error) {
+      return false;
     }
   }
-  return false;
 }
 
 Vue.use(mdui);
 Vue.use(mavonEditor);
+Vue.use(AsyncComputed);
 
 // app.use() 的第二个参数是可选的
 

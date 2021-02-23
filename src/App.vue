@@ -1,6 +1,6 @@
-
 <template>
   <v-app id="inspire">
+    <!--顶栏AppBar-->
     <v-app-bar app>
       <v-container class="py-0 fill-height">
         <v-app-bar-title>衡中极客圈</v-app-bar-title>
@@ -19,7 +19,9 @@
       </v-container>
     </v-app-bar>
 
-    <v-navigation-drawer v-model="drawer" :mini-variant.sync="mini" permanent app>
+    <!--侧栏Drawer-->
+    <v-navigation-drawer v-model="drawer" :mini-variant.sync="mini" permanent app :key="isLogin">
+      <!--Drawer顶部用户信息-->
       <v-list-item class="px-2">
         <v-list-item-avatar v-if="isLogin">
           <v-img :src="loginAvatar"></v-img>
@@ -32,29 +34,35 @@
 
         <v-list-item-title>
           <span v-if="isLogin">{{loginUsername}}</span>
-          <v-dialog width="500" v-else>
+          <v-dialog max-width="500px" v-else>
             <template v-slot:activator="{ on, attrs }">
               <v-btn color="primary" elevation="2" v-on="on" v-bind="attrs" v-if="!isLogin">登录</v-btn>
             </template>
-
             <v-card>
-              <v-card-title class="headline grey lighten-2">登录：衡中极客圈</v-card-title>
-
+              <v-card-title>
+                <span class="headline">登录：衡中极客圈</span>
+              </v-card-title>
               <v-card-text>
-                <v-text-field label="用户名/邮箱" outlined v-model="usernameL"></v-text-field>
-                <v-text-field label="密码" outlined v-model="passwordL"></v-text-field>
+                <v-container>
+                  <v-text-field label="用户名/邮箱" v-model="usernameL"></v-text-field>
+                  <v-text-field
+                    v-model="passwordL"
+                    :append-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'"
+                    :type="show1 ? 'text' : 'password'"
+                    name="input-10-1"
+                    label="密码"
+                    @click:append="show1 = !show1"
+                    @keyup.enter="login()"
+                  ></v-text-field>
+                </v-container>
               </v-card-text>
-
-              <v-divider></v-divider>
-
               <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn color="primary" text @click="login()">登录</v-btn>
+                <v-btn color="primary" @click="login()">登录</v-btn>
               </v-card-actions>
             </v-card>
           </v-dialog>
         </v-list-item-title>
-
         <v-btn icon @click.stop="mini = !mini">
           <v-icon>mdi-chevron-left</v-icon>
         </v-btn>
@@ -62,6 +70,7 @@
 
       <v-divider></v-divider>
 
+      <!--Drawer主体列表-->
       <v-list dense>
         <v-list-item link to="/">
           <v-list-item-icon>
@@ -90,14 +99,29 @@
           </v-list-item-content>
         </v-list-item>
 
-        <v-list-item link v-if="isLogin">
-          <v-list-item-icon>
-            <v-icon>mdi-logout</v-icon>
-          </v-list-item-icon>
-          <v-list-item-content>
-            <v-list-item-title>Log Out</v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
+        <v-dialog max-width="500px" v-if="isLogin" v-model="dialog.logout">
+          <template v-slot:activator="{ on, attrs }" v-if="isLogin">
+            <v-list-item link v-bind="attrs" v-on="on">
+              <v-list-item-icon>
+                <v-icon>mdi-logout</v-icon>
+              </v-list-item-icon>
+              <v-list-item-content>
+                <v-list-item-title>Log Out</v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+          </template>
+          <v-card>
+            <v-card-title>
+              <span class="headline">你确定不是手滑了嘛</span>
+            </v-card-title>
+
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn color="primary" @click="dialog.logout = false">我手滑了</v-btn>
+              <v-btn color="primary" text @click="logout()">确定退出</v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
 
         <v-list-item link v-if="!isLogin">
           <v-list-item-icon>
@@ -110,6 +134,7 @@
       </v-list>
     </v-navigation-drawer>
 
+    <!--主体部分：容器、回顶按钮、Snackbar-->
     <v-main class="grey lighten-3">
       <v-container>
         <transition name="fade">
@@ -122,6 +147,8 @@
         </v-btn>
       </v-fab-transition>
     </v-main>
+
+    <!--页脚Footer-->
     <v-footer color="primary lighten-1" padless inset app absolute>
       <v-row justify="center" no-gutters>
         <v-btn v-for="link in links" :key="link" color="white" text rounded class="my-2">{{ link }}</v-btn>
@@ -140,24 +167,18 @@ let AV, mdui, loginDlg, signupDlg, rstpswdDlg;
 export default {
   name: 'Main',
   methods: {
-    plsLogin: function () {
-      loginDlg = new mdui.Dialog('#login-dialog',);
-      signupDlg = new mdui.Dialog('#signUp-dialog',);
-      rstpswdDlg = new mdui.Dialog('#resetPassword-dialog',);
-      loginDlg.open();
-    },
-    logout: function () {
+    logout: async function () {
       AV.User.logOut();
-      location.reload();
+      await this.refresh();
     },
-    login: function () {
+    login: async function () {
       var userName = this.usernameL;
       var password = this.passwordL;
       if (userName != "" && password != "") {
         if (userName.indexOf("@") != -1 && userName.indexOf(".") != -1) {
           AV.User.loginWithEmail(userName, password).then(async () => {
             mdui.snackbar("登录成功~",);
-            location.reload();
+            await this.refresh();
           }, (error) => {
             if (error.code == 216) return mdui.snackbar("您的邮箱还未验证",);
             if (error.code == 210) return mdui.snackbar("用户名或密码不正确",);
@@ -168,16 +189,8 @@ export default {
         }
         else {
           AV.User.logIn(userName, password).then(async () => {
-            const roles = await AV.User.current().getRoles();
-            if (!roles) {
-              const query = new AV.Query('_Role');
-              query.equalTo('name', 'Subscriber');
-              query.first().then((Subscriber) => {
-                Subscriber.getUsers().add(AV.User.current());
-              }, () => mdui.snackbar("添加权限错误，请联系管理员",));
-            }
             mdui.snackbar("登录成功~",);
-            location.reload();
+            await this.refresh();
           }, (error) => {
             if (error.code == 216) return mdui.snackbar("您的邮箱还未验证",);
             if (error.code == 210) return mdui.snackbar("用户名或密码不正确",);
@@ -249,8 +262,14 @@ export default {
       } else {
         that.btnFlag = false
       }
+    },
+    refresh: async function () {
+      this.canWrite = await this.isEditor();
+      this.isLogin = this.isLogingIn();
+      if (AV.User.current()) this.loginUsername = this.getUserInfo(AV.User.current()).username;
+      if (AV.User.current()) this.loginAvatar = this.getUserInfo(AV.User.current()).avatar;
+      this.dialog.logOut = false;
     }
-
   },
   watch: {
     confirm: function () {
@@ -269,14 +288,6 @@ export default {
     }
   },
   computed: {
-    loginUsername: function () {
-      if (!this.currentUser) return null;
-      return this.getUserInfo(this.currentUser).username;
-    },
-    loginAvatar: function () {
-      if (!this.currentUser) return null;
-      return this.getUserInfo(this.currentUser).avatar;
-    },
     activeFab() {
       switch (this.tabs) {
         case 'one': return { class: 'purple', icon: 'account_circle' }
@@ -290,6 +301,8 @@ export default {
     return {
       confirmError: false,
       passwordError: false,
+      loginUsername: null,
+      loginAvatar: null,
       username: '',
       email: '',
       password: '',
@@ -315,13 +328,16 @@ export default {
       ],
       mini: true,
       btnFlag: false,
+      show1: false,
+      dialog: {
+        logout: false,
+      }
     };
   },
   created: async function () {
     AV = this.AV;
     mdui = this.mdui;
-    this.canWrite = await this.isEditor();
-    this.isLogin = this.isLogingIn();
+    await this.refresh();
   },
   mounted: function () {
     window.addEventListener('scroll', this.scrollToTop)
