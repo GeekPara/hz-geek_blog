@@ -1,33 +1,31 @@
 <template>
-  <div class="mdui-col-xs-12 mdui-col-md-10 mdui-col-offset-md-1">
-    <div
-      class="mdui-card mdui-hoverable mdui-m-y-2"
-      v-for="article in articles"
-      :key="article.route"
-    >
-    <v-lazy>
-      <router-link :to="article.route">
-        <div class="mdui-card-media" style="height: 20rem;">
-          <img :src="article.headImage" class="mdui-img-fluid" />
-        </div>
-        <div class="mdui-card-media-covered mdui-card-media-covered-top">
-          <div class="mdui-card-primary">
-            <div class="mdui-card-primary-title">{{article.title}}</div>
-            <div class="mdui-card-primary-subtitle">{{article.subtitle}}</div>
-          </div>
-        </div>
-        <div class="mdui-card-media-covered mdui-card-media-covered-gradient">
-          <div class="mdui-card-header">
-            <img class="mdui-card-header-avatar" :src="article.avatar" />
-            <div class="mdui-card-header-title">{{article.authorName}}</div>
-            <div class="mdui-card-header-subtitle">{{article.date}}</div>
-          </div>
-        </div>
-      </router-link>
-      </v-lazy>
-    </div>
-  </div>
-  
+  <v-container>
+    <v-row v-for="article in articles" :key="article.onlyTag">
+      <v-col cols="12" offset="0" md="10" offset-md="1">
+        <v-lazy>
+          <v-card :to="article.route">
+            <v-card-title>{{article.title}}</v-card-title>
+            <v-card-subtitle class="pb-0">{{article.subtitle}}</v-card-subtitle>
+            <v-img class="white--text align-end" height="200px" :src="article.headImage">
+              <v-container>
+                <v-row>
+                  <v-col cols="1">
+                    <v-avatar left>
+                      <v-img :src="article.avatar"></v-img>
+                    </v-avatar>
+                  </v-col>
+                  <v-col cols="11">
+                    <div class="text-subtitle-1 transition-swing">{{article.authorName}}</div>
+                    <div class="text-subtitle-2 transition-swing">{{article.date}}</div>
+                  </v-col>
+                </v-row>
+              </v-container>
+            </v-img>
+          </v-card>
+        </v-lazy>
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
 
 <script>
@@ -35,10 +33,10 @@ export default {
   name: 'Home',
   data() {
     return {
-      articles: []
+      articles: [],
     }
   },
-  awaitComputed:{
+  awaitComputed: {
   },
   created: async function () {
     const AV = this.AV;
