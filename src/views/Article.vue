@@ -71,7 +71,6 @@ export default {
   },
   created: async function () {
     AV = this.AV;
-    //mdui = this.mdui;
     var onlyTag = this.$route.params.onlyTag;
     const query = new AV.Query('Article');
     query.equalTo('onlyTag', onlyTag);

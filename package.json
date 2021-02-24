@@ -26,7 +26,6 @@
     "markdown-it-task-lists": "^2.1.1",
     "markdown-it-toc": "^1.1.0",
     "mavon-editor-x": "^1.0.1",
-    "mdui": "^1.0.1",
     "vue": "^2.6.11",
     "vue-async-computed": "^3.9.0",
     "vue-router": "^3.2.0",

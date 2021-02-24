@@ -1,7 +1,5 @@
 import Vue from 'vue';
 import App from './App.vue';
-import mdui from 'mdui';
-import 'mdui/dist/css/mdui.min.css';
 import router from './router';
 import AV from 'leancloud-storage';
 import mavonEditor from 'mavon-editor-x';
@@ -18,7 +16,6 @@ AV.init({
 
 Vue.config.productionTip = false;
 Vue.prototype.AV = AV;
-Vue.prototype.mdui = mdui;
 
 Vue.prototype.getUserInfo = function (userObj) {
   var avatar,  username;
@@ -44,7 +41,6 @@ Vue.prototype.isEditor = async function () {
   }
 }
 
-Vue.use(mdui);
 Vue.use(mavonEditor);
 Vue.use(AsyncComputed);
 
