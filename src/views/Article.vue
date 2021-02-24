@@ -1,37 +1,48 @@
 <template>
-  <div class="mdui-col-xs-12 mdui-col-md-10 mdui-col-offset-md-1" id="articleListHolder">
-    <div class="mdui-card mdui-hoverable mdui-m-t-2">
-      <div class="mdui-card-media" style="height: 20rem;">
-        <img :src="headImage" class="mdui-img-fluid" />
-        <div class="mdui-card-media-covered mdui-card-media-covered-gradient">
-          <div class="mdui-card-primary">
-            <div class="mdui-card-primary-title">{{title}}</div>
-            <div class="mdui-card-primary-subtitle">{{subtitle}}</div>
-          </div>
-        </div>
-      </div>
-      <div class="mdui-card-media-covered mdui-card-media-covered-top">
-        <div class="mdui-card-header">
-          <img class="mdui-card-header-avatar" :src="avatar" />
-          <div class="mdui-card-header-title">{{authorName}}</div>
-          <div class="mdui-card-header-subtitle">{{date}}</div>
-        </div>
-      </div>
-    </div>
-    <div class="mdui-card">
-      <div class="mdui-card-content mdui-typo">
-        <Markdown :content="content" />
-      </div>
-
-      <div class="mdui-card-actions">
-        <button class="mdui-btn mdui-ripple">action 1</button>
-        <button class="mdui-btn mdui-ripple">action 2</button>
-        <button class="mdui-btn mdui-btn-icon mdui-float-right">
-          <i class="mdui-icon material-icons">expand_more</i>
-        </button>
-      </div>
-    </div>
-  </div>
+  <v-container>
+    <v-row>
+      <v-col cols="12" offset="0" md="10" offset-md="1">
+        <v-card>
+          <v-container>
+            <v-row>
+              <v-col cols="1">
+                <v-avatar left>
+                  <v-img :src="avatar"></v-img>
+                </v-avatar>
+              </v-col>
+              <v-col cols="11">
+                <div class="text-subtitle-1 transition-swing">{{authorName}}</div>
+                <div class="text-subtitle-2 transition-swing">{{date}}</div>
+              </v-col>
+            </v-row>
+          </v-container>
+          <v-img class="white--text align-end" height="200px" :src="headImage">
+            <v-card-title>{{title}}</v-card-title>
+          </v-img>
+          <v-card-subtitle class="pb-0">{{subtitle}}</v-card-subtitle>
+          <v-card-text>
+            <v-container>
+              <Markdown :content="content" />
+            </v-container>
+          </v-card-text>
+          <v-card-actions>
+            <v-btn icon color="success">
+              <v-icon>mdi-thumb-up</v-icon>
+            </v-btn>
+            <v-btn icon color="error">
+              <v-icon>mdi-thumb-down</v-icon>
+            </v-btn>
+            <v-btn icon color="warning">
+              <v-icon>mdi-star</v-icon>
+            </v-btn>
+            <v-btn icon color="info">
+              <v-icon>mdi-comment</v-icon>
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
 
 <style>
