@@ -111,9 +111,7 @@
             </v-list-item>
           </template>
           <v-card>
-            <v-card-title>
-              <span class="headline">你确定不是手滑了嘛</span>
-            </v-card-title>
+            <v-card-title>你确定不是手滑了嘛</v-card-title>
 
             <v-card-actions>
               <v-spacer></v-spacer>
