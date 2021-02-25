@@ -55,8 +55,8 @@ export default {
       if (!this.headImageRaw) return;
       const reader = new FileReader();
       reader.readAsArrayBuffer(this.headImageRaw);
-      reader.onload = function () {
-        const bytes = new Uint8Array(this.result);
+      reader.onload = () => {
+        const bytes = new Uint8Array(reader.result);
         let binary = '';
         for (let i = 0; i < bytes.byteLength; i++) {
           binary += String.fromCharCode(bytes[i])
@@ -71,17 +71,17 @@ export default {
       if (!this.content) return this.$emit('showSnackbar', "不写内容文章发你妈呢", "error");
       if (!this.onlyTag) this.onlyTag = this.md5(this.title + this.content);
 
-      console.log(this.headImageB64)
       let AV = this.AV;
       if (this.headImageRaw) {
-        let url = `https://api.github.com/repos/HZGeek/HZGeek-BlogImages/contents/path/`
+        let url = `https://api.github.com/repos/HZGeek/HZGeek-BlogImages/contents/`
         let filename = this.md5(this.headImageRaw) + '.' + this.headImageRaw.name.split('.').pop();
+        let token = await this.getGithubToken();
         try {
-          let response = await fetch(url, {
+          let response = await fetch(url + filename + `?access_token=${token}`, {
             method: 'PUT',
             headers: {
               accept: 'application/vnd.github.v3+json',
-              Authorization: await this.getGithubToken()
+              //Authorization: `token ${token}`
             },
             body: `{
               "message": "Article:${this.onlyTag}",
@@ -125,12 +125,11 @@ export default {
         this.$emit('showSnackbar', "文章保存失败，详细信息请查看控制台", "error");
       }
     },
-    getImageB64: function () {
-      if (!this.headImageRaw) return;
+    uploadImage: function (image) {
       const reader = new FileReader();
-      reader.readAsArrayBuffer(this.headImageRaw);
-      reader.onload = function () {
-        const bytes = new Uint8Array(this.result);
+      reader.readAsArrayBuffer(image);
+      reader.onload = ()=> {
+        const bytes = new Uint8Array(reader.result);
         let binary = '';
         for (let i = 0; i < bytes.byteLength; i++) {
           binary += String.fromCharCode(bytes[i])

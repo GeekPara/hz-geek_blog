@@ -47,7 +47,7 @@ Vue.prototype.getGithubToken = async function () {
   const query = new AV.Query('Tokens');
   try {
     let obj = await query.get('603616dc14fdc86b177f0ac1');
-    let token = obj.get('Token');
+    let token = obj.get('token');
     return token;
   } catch (error) {
     return error;
